@@ -13,13 +13,6 @@ public class Paciente {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
-    }
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public void cadastro(String nome, String cpf, String endereco, String prontuario) {
         //fazer cadastro
     }
