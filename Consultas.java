@@ -37,7 +37,7 @@ public String getHora(){
     return hora;
 }
 
-public Consultas(int consultasid, int pacienteid, int medicoid, String data, String hora){
+public Consultas(int consultaid, int pacienteid, int medicoid, String data, String hora){
     setConsulta(consultaid);
     setPaciente(pacienteid);
     setMedico(medicoid);
