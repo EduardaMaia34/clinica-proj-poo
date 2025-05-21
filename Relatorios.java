@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Relatorios {
     
     private int pacienteid;
@@ -5,6 +7,8 @@ public class Relatorios {
     private int consultaid;
     private String periodo1;
     private String periodo2;
+
+    Scanner read = new Scanner(System.in);
 
     public void setPaciente(int pacienteid){
         this.pacienteid = pacienteid;
@@ -46,13 +50,20 @@ public class Relatorios {
          setPeriodo2(periodo2);
     }
     public void porMedico(int medicoid){
-
+        System.out.print("digite o ID do médico para ver seu relatório: ");
+        this.medicoid = read.nextInt();
+        // banco de dados mostra o relatório do médico
     }
     public void porPaciente(int pacienteid){
-
+        System.out.print("digite o ID do paciente para ver seu relatório: ");
+        this.pacienteid = read.nextInt();
+        // banco de dados mostra o relatório do paciente
     }
     public void porPeriodo(String periodo1, String periodo2){
-
+        System.out.print("digite a data inicial e a data final para ver os relatórios desse período: ");
+        this.periodo1 = read.nextLine();
+        this.periodo2 = read.nextLine();
+        // BD mostra todos os relátorios nesse espaço de tempo
     }
 
 }
