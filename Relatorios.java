@@ -67,5 +67,7 @@ public class Relatorios {
         this.periodo2 = read.nextLine();
         // BD mostra todos os relátorios nesse espaço de tempo
     }
+public void fechar(){
 read.close();
+}
 }
