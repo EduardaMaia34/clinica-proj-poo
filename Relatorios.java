@@ -49,17 +49,19 @@ public class Relatorios {
          setPeriodo1(periodo1);
          setPeriodo2(periodo2);
     }
-    public void porMedico(int medicoid){
+    public void porMedico(){
         System.out.print("digite o ID do médico para ver seu relatório: ");
         this.medicoid = read.nextInt();
+        read.nextLine();
         // banco de dados mostra o relatório do médico
     }
-    public void porPaciente(int pacienteid){
+    public void porPaciente(){
         System.out.print("digite o ID do paciente para ver seu relatório: ");
         this.pacienteid = read.nextInt();
+        read.nextLine();
         // banco de dados mostra o relatório do paciente
     }
-    public void porPeriodo(String periodo1, String periodo2){
+    public void porPeriodo(){
         System.out.print("digite a data inicial e a data final para ver os relatórios desse período: ");
         this.periodo1 = read.nextLine();
         this.periodo2 = read.nextLine();
