@@ -1,8 +1,17 @@
 package com.eduardamaia.entities;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity
 public class Medico extends Pessoa{
     private double valorConsulta;
     private String codigoConselho;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     public Medico(String nome, String cpf, String endereco, double valorConsulta, String codigoConselho, int id) {
         super(nome, cpf, endereco, id);
@@ -10,20 +19,28 @@ public class Medico extends Pessoa{
         this.codigoConselho = codigoConselho;
     }
 
-    public void cadastrar(String nome, String cpf, String endereco, double valorConsulta, String codigoConselho, int id) {
-        //fazer cadastro
+    public double getValorConsulta() {
+        return valorConsulta;
     }
-    @Override
-    public int buscar(String nomeOuCodigo){
-        //buscar no bd
-        return 0;
+
+    public void setValorConsulta(double valorConsulta) {
+        this.valorConsulta = valorConsulta;
     }
-    @Override
-    public void editar(int id) {
-        //editar informacoes
+
+    public String getCodigoConselho() {
+        return codigoConselho;
     }
-    @Override
-    public void excluir(int id) {
-        //excluir no bd
+
+    public void setCodigoConselho(String codigoConselho) {
+        this.codigoConselho = codigoConselho;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
 }
