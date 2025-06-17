@@ -1,3 +1,4 @@
+package com.eduardamaia.entities;
 import java.util.Scanner;
 
 public class Relatorios {
@@ -43,11 +44,11 @@ public class Relatorios {
     }
 
     public Relatorios(int pacienteid, int medicoid, int consultaid, String periodo1, String periodo2){
-         setPaciente(pacienteid);
-         setMedico(medicoid);
-         setConsulta(consultaid);
-         setPeriodo1(periodo1);
-         setPeriodo2(periodo2);
+        setPaciente(pacienteid);
+        setMedico(medicoid);
+        setConsulta(consultaid);
+        setPeriodo1(periodo1);
+        setPeriodo2(periodo2);
     }
     public void porMedico(){
         System.out.print("digite o ID do médico para ver seu relatório: ");

@@ -1,3 +1,4 @@
+package com.eduardamaia.entities;
 import java.util.Scanner;
 
 public class Consultas{
