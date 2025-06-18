@@ -3,15 +3,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name="Medico")
 public class Medico extends Pessoa{
     private double valorConsulta;
     private String codigoConselho;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    public Medico() {
+        super();
+    }
 
     public Medico(String nome, String cpf, String endereco, double valorConsulta, String codigoConselho, int id) {
         super(nome, cpf, endereco, id);
@@ -33,14 +35,6 @@ public class Medico extends Pessoa{
 
     public void setCodigoConselho(String codigoConselho) {
         this.codigoConselho = codigoConselho;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
     
 }

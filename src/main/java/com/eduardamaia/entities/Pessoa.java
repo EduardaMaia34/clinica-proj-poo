@@ -1,18 +1,32 @@
 package com.eduardamaia.entities;
 
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Pessoa {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     protected String nome;
     protected String cpf;
     protected String endereco;
+
+    public Pessoa() {
+    }
 
     public Pessoa(String nome, String cpf, String endereco, int id) {
         this.nome = nome;
         this.cpf = cpf;
         this.endereco = endereco;
     }
+
 
     public String getNome() {
         return nome;
@@ -36,6 +50,14 @@ public abstract class Pessoa {
 
     public void setEndereco(String endereco) {
         this.endereco = endereco;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
 }
