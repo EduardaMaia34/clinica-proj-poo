@@ -1,85 +1,91 @@
 package com.eduardamaia.entities;
-import java.util.Scanner;
 
-public class Consultas{
-private int consultaid;
-private int pacienteid;
-private int medicoid;
-private String data;
-private String hora;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.CascadeType;
 
-Scanner read = new Scanner(System.in);
+@Entity
+public class Consultas {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-public void setConsulta(int consultaid){
-    this.consultaid = consultaid;
-}
-public void setPaciente(int pacienteid){
-    this.pacienteid = pacienteid;
-}
-public void setMedico(int medicoid){
-    this.medicoid = medicoid;
-}
-public void setData(String data){
-    this.data = data;
-}
-public void setHora(String hora){
-this.hora = hora;
-}
+    private int id;
+    private int pacienteid;
+    private int medicoid;
+    private String data;
+    private String hora;
 
-public int getConsulta(){
-    return consultaid;
-}
-public int getPaciente(){
-    return pacienteid;
-}
-public int getMedico(){
-    return medicoid;
-}
-public String getData(){
-    return data;
-}
-public String getHora(){
-    return hora;
-}
+    @OneToOne(mappedBy = "consulta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Relatorio relatorio;
 
-public Consultas(int consultaid, int pacienteid, int medicoid, String data, String hora){
-    setConsulta(consultaid);
-    setPaciente(pacienteid);
-    setMedico(medicoid);
-    setData(data);
-    setHora(hora);
-}
 
-public void marcar(){
-    System.out.println("digite o id do paciente, o id do médico, a data e a hora que deseja agendar: ");
-    this.pacienteid = read.nextInt();
-    this.medicoid = read.nextInt();
-    read.nextLine();
-    this.data = read.nextLine();
-    this.hora = read.nextLine();
-    System.out.println("consulta marcada! ");
-    System.out.println("ID do médico: " + medicoid);
-    System.out.println("Data: " + data + "\nHora: " + hora);
-}
-public void cancelar(){
-    System.out.println("Digite o ID da consulta para realizar o cancelamento: ");
-    this.consultaid = read.nextInt();
-    read.nextLine();
-    // if consultaid esta no banco de dados
-    System.out.println("Consulta " + consultaid + " cancelada!");
-    // caso contrario, System.out.println("ID inválido, verifique se foi realizado o agendamento");
-}
-public void buscar(){
-    System.out.println("para buscar uma consulta, digite o id do paciente, id do médico, data e hora agendada: ");
-    this.pacienteid = read.nextInt();
-    this.medicoid = read.nextInt();
-    read.nextLine();
-    this.data = read.nextLine();
-    this.hora = read.nextLine();
-    // se o id do paciente, id do médico, data e hora estiverem no banco de dados, a consulta aparece na tela
-    // caso contrario, aparece "dados errados ou inexistentes"
-}
-public void fechar(){
-read.close();
-}
+    public void setRelatorio(Relatorio relatorio){
+        if(relatorio !=null){
+            relatorio.setConsulta(this);
+        }
+        this.relatorio = relatorio;
+    }
+    public void setId(int id){
+        if (id<=0)
+            throw new IllegalArgumentException("ID não pode ser menor ou igual a 0");
+        this.id = id;
+    }
+    public void setPaciente(int pacienteid) {
+        if (pacienteid<=0)
+        throw new IllegalArgumentException("ID do paciente nao pode ser menor ou igual a 0");
+        this.pacienteid = pacienteid;
+    }
+
+    public void setMedico(int medicoid) {
+        if (medicoid<=0)
+            throw new IllegalArgumentException("ID do médico nao pode ser menor ou igual a 0");
+        this.medicoid = medicoid;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public void setHora(String hora) {
+        this.hora = hora;
+    }
+
+    public Relatorio getRelatorio() {
+        return relatorio;
+    }
+
+    public int getId(){
+        return id;
+    }
+    public int getPaciente() {
+        return pacienteid;
+    }
+
+    public int getMedico() {
+        return medicoid;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public String getHora() {
+        return hora;
+    }
+
+
+    public Consultas() {
+    }
+
+    public Consultas(int consultaid, int pacienteid, int medicoid, String data, String hora) {
+        setPaciente(pacienteid);
+        setMedico(medicoid);
+        setData(data);
+        setHora(hora);
+    }
+
 }
