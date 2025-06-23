@@ -80,6 +80,9 @@ public class Relatorio {
        }
        this.periodo2 = periodo2;
     }
+    public void setId(int id){
+        this.id = id;
+    }
     
     public Paciente getPaciente(){
         return paciente;
@@ -102,5 +105,5 @@ public class Relatorio {
     public int getId(){
         return id;
     }
-    
+
 }
