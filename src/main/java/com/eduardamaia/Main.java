@@ -1,3 +1,4 @@
+package com.eduardamaia;
 import org.hibernate.Session;
 
 import com.eduardamaia.entities.Medico;
