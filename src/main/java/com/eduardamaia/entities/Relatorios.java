@@ -24,17 +24,17 @@ public class Relatorio {
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
-    private int consultaId;
+    private Consultas consulta;
     private LocalDate periodo1;
     private LocalDate periodo2;
     private String conteudo;
 
     public Relatorio(){
     }
-    public Relatorio(Medico medico, Paciente paciente, int consultaId, String conteudo, LocalDate periodo1, LocalDate periodo2) {
+    public Relatorio(Medico medico, Paciente paciente, Consultas consulta, String conteudo, LocalDate periodo1, LocalDate periodo2) {
         setMedico(medico);
         setPaciente(paciente);
-        setConsultaID(consultaId);
+        setConsulta(consulta);
         setConteudo(conteudo);
         setPeriodo1(periodo1);
         setPeriodo2(periodo2);
@@ -56,11 +56,11 @@ public class Relatorio {
             this.conteudo = conteudo;
         }
     }
-    public void setConsultaID(int consultaId){
-        if(consultaId <= 0){
-            throw new IllegalArgumentException("ID inválido");
+    public void setConsulta(Consultas consulta) {
+        if (consulta == null) {
+            throw new IllegalArgumentException("A consulta do relatório não pode ser nula.");
         }
-        this.consultaId = consultaId;
+        this.consulta = consulta;
     }
     public void setPeriodo1(LocalDate periodo1){
         if (periodo1 == null){
@@ -93,8 +93,8 @@ public class Relatorio {
     public String getConteudo(){
         return conteudo;
     }
-    public int getConsultaID(){
-        return consultaId;
+    public Consultas getConsulta() {
+        return consulta;
     }
     public LocalDate getPeriodo1(){
         return periodo1;
