@@ -1,4 +1,5 @@
 package com.eduardamaia.service;
+
 import com.eduardamaia.entities.Medico;
 import com.eduardamaia.entities.Paciente;
 import com.eduardamaia.entities.Relatorio;
@@ -9,56 +10,67 @@ import java.util.List;
 import java.util.Objects;
 
 public class RelatorioService {
-    private RelatorioRepository RelatorioRepository = new RelatorioRepository();
+    private final RelatorioRepository relatorioRepository = new RelatorioRepository();
 
     public Relatorio criarRelatorio(Relatorio relatorio) {
         if (relatorio == null) {
             throw new IllegalArgumentException("Relatorio não pode ser nulo");
         }
         if (relatorio.getMedico() == null || relatorio.getPaciente() == null) {
-            throw new IllegalArgumentException("O relatorio precisa de um medico ou paciente");
+            throw new IllegalArgumentException("O relatorio precisa de um medico e um paciente");
         }
         if (relatorio.getPeriodo1() != null && relatorio.getPeriodo1().isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("A data de busca não pode ser futura");
         }
-        RelatorioRepository.Salvar(relatorio);
+        
+        relatorioRepository.salvar(relatorio);
         return relatorio;
     }
 
-    public Relatorio buscarPorID(int Id) {
-        return RelatorioRepository.buscarPorId(Id);
+    public Relatorio buscarPorID(int id) {
+        return relatorioRepository.buscarPorId(id);
     }
 
     public List<Relatorio> listartodos() {
-        return RelatorioRepository.listartodos();
+        return relatorioRepository.listarTodos();
     }
 
-    public boolean excluirRelatorio(int Id) {
-        Relatorio relatorioexistente = RelatorioRepository.buscarPorId(Id);
+    public boolean excluirRelatorio(int id) {
+        Relatorio relatorioexistente = relatorioRepository.buscarPorId(id);
         if (relatorioexistente != null) {
-            RelatorioRepository.excluir(Id);
+            relatorioRepository.excluir(id);
             return true;
         }
         return false;
     }
-    public Relatorio atualizarRelatorio(int Id, Relatorio relatorioAtualizado) {
-        Relatorio relatorioexistente = buscarPorID(Id);
-        if (relatorioexistente == null) {
-            throw new IllegalArgumentException("Relatório com ID " + Id + " não encontrado para atualização");
+    
+    public Relatorio atualizarRelatorio(int id, Relatorio relatorioAtualizado) {
+        Relatorio relatorioExistente = buscarPorID(id);
+
+        if (relatorioExistente == null) {
+            throw new IllegalArgumentException("Relatório com ID " + id + " não encontrado para atualização");
         }
-        relatorioexistente.setConteudo(relatorioAtualizado.getConteudo());
-        relatorioexistente.setMedico(relatorioAtualizado.getMedico());
-        relatorioexistente.setPaciente(relatorioAtualizado.getPaciente());
-        return relatorioexistente;
+        
+        relatorioExistente.setMedico(relatorioAtualizado.getMedico());
+        relatorioExistente.setPaciente(relatorioAtualizado.getPaciente());
+        relatorioExistente.setPeriodo1(relatorioAtualizado.getPeriodo1());
+        relatorioExistente.setPeriodo2(relatorioAtualizado.getPeriodo2());
+        
+        relatorioRepository.salvar(relatorioExistente);
+
+        return relatorioExistente;
     }
+
     public List<Relatorio> buscarPorMedico(Medico medico) {
         Objects.requireNonNull(medico, "O objeto Médico não pode ser nulo.");
-        return RelatorioRepository.buscarPorMedico(medico);
+        return relatorioRepository.buscarPorMedico(medico);
     }
+
     public List<Relatorio> buscarPorPaciente(Paciente paciente) {
         Objects.requireNonNull(paciente, "O objeto Paciente não pode ser nulo.");
-        return RelatorioRepository.buscarPorpaciente(paciente);
+        return relatorioRepository.buscarPorPaciente(paciente);
     }
+
     public List<Relatorio> buscarPorPeriodo(LocalDate periodo1, LocalDate periodo2) {
         if (periodo1 == null || periodo2 == null) {
             throw new IllegalArgumentException("As datas de início e fim do período devem ser fornecidas.");
@@ -66,6 +78,7 @@ public class RelatorioService {
         if (periodo1.isAfter(periodo2)) {
             throw new IllegalArgumentException("A data de início não pode ser posterior à data de fim.");
         }
-        return RelatorioRepository.buscarPorPeriodo(periodo1, periodo2);
+        return relatorioRepository.buscarPorPeriodo(periodo1, periodo2);
     }
 }
+
