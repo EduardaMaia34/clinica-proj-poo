@@ -1,5 +1,6 @@
 package com.eduardamaia.entities;
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 public class Consultas {
@@ -9,10 +10,10 @@ public class Consultas {
     private int id;
     private int pacienteid;
     private int medicoid;
-    private String data;
-    private String hora;
+    private LocalDate data;
+    private LocalDate hora;
 
-    @OneToOne(mappedBy = "consulta", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "consulta")
     private Relatorio relatorio;
 
 
@@ -32,53 +33,50 @@ public class Consultas {
         throw new IllegalArgumentException("ID do paciente nao pode ser menor ou igual a 0");
         this.pacienteid = pacienteid;
     }
-
     public void setMedico(int medicoid) {
         if (medicoid<=0)
             throw new IllegalArgumentException("ID do médico nao pode ser menor ou igual a 0");
         this.medicoid = medicoid;
     }
-
-    public void setData(String data) {
-        this.data = data;
+    public void setData(LocalDate data) {
+      if(data == null) {
+          throw new IllegalArgumentException("Data não pode ser nula");
+      }
+      this.data = data;
     }
-
-    public void setHora(String hora) {
+    public void setHora(LocalDate hora) {
+        if(hora == null){
+            throw new IllegalArgumentException("Hora não pode ser nula");
+        }
         this.hora = hora;
     }
 
     public Relatorio getRelatorio() {
         return relatorio;
     }
-
     public int getId(){
         return id;
     }
     public int getPaciente() {
         return pacienteid;
     }
-
     public int getMedico() {
         return medicoid;
     }
-
-    public String getData() {
+    public LocalDate getData() {
         return data;
     }
-
-    public String getHora() {
+    public LocalDate getHora() {
         return hora;
     }
-
-
+    
     public Consultas() {
     }
 
-    public Consultas(int consultaid, int pacienteid, int medicoid, String data, String hora) {
+    public Consultas(int consultaid, int pacienteid, int medicoid, LocalDate data, LocalDate hora) {
         setPaciente(pacienteid);
         setMedico(medicoid);
         setData(data);
         setHora(hora);
     }
-
 }
