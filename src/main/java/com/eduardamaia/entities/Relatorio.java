@@ -1,7 +1,6 @@
 package com.eduardamaia.entities;
 
 import javax.persistence.*;
-
 import java.time.LocalDate;
 
 @Entity
@@ -11,7 +10,7 @@ public class Relatorio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    //@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "medico_id", nullable = false)
     private Medico medico;
 
