@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.eduardamaia.clinica.projetopooclinica.controller.LoginController">
+   <children>
+      <VBox alignment="CENTER" layoutX="150.0" layoutY="75.0" prefHeight="250.0" prefWidth="300.0" spacing="15.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="75.0">
+         <children>
+            <Label text="Bem-vindo!">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Label text="Login:">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </Label>
+            <TextField fx:id="usernameField" promptText="Digite seu nome de usuário" />
+            <Label text="Senha:"/>
+            <PasswordField fx:id="passwordField" promptText="Digite sua senha" />
+            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLoginButton" text="Login" />
+            <Button fx:id="registerButton" mnemonicParsing="false" onAction="#handleRegisterButton" text="Cadastrar Usuário" />
+            <Label fx:id="errorMessageLabel" textFill="RED">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </Label>
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </VBox>
+   </children>
+</AnchorPane>

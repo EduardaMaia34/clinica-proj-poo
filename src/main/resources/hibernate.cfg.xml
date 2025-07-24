@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hibernate-configuration>
+    <session-factory>
+
+        <!-- Conexão -->
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/clinicabd</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.connection.password">2006</property>
+
+        <!-- Dialeto -->
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+        <!-- Logs SQL -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- Gerenciar tabelas -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Pool -->
+        <property name="hibernate.connection.pool_size">5</property>
+
+        <!-- Suas classes -->
+        <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Paciente"/>
+        <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Medico"/>
+        <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Usuario"/>
+
+    </session-factory>
+</hibernate-configuration>

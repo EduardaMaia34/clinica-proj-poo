@@ -1,5 +1,5 @@
 package com.eduardamaia.clinica.projetopooclinica.entities;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 public class Consultas {

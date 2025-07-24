@@ -9,7 +9,7 @@ public class HibernateUtil {
 
     private static SessionFactory buildSessionFactory() {
         try {
-            return new Configuration().configure().buildSessionFactory();
+            return new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
         } catch (Throwable ex) {
             System.err.println("Erro na criação do SessionFactory: " + ex);
             throw new ExceptionInInitializerError(ex);
@@ -24,4 +24,3 @@ public class HibernateUtil {
         getSessionFactory().close();
     }
 }
-

@@ -5,7 +5,7 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 
 import com.eduardamaia.clinica.projetopooclinica.entities.Paciente;
 import com.eduardamaia.clinica.projetopooclinica.util.HibernateUtil;
@@ -49,7 +49,7 @@ public class PacienteRepository {
 
     public List<Paciente> listarTodos() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            javax.persistence.TypedQuery<Paciente> query = session.createQuery("from Paciente", Paciente.class);
+            jakarta.persistence.TypedQuery<Paciente> query = session.createQuery("from Paciente", Paciente.class);
             return query.getResultList();
         }
     }

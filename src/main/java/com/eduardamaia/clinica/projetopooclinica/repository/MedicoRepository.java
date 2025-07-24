@@ -8,7 +8,7 @@ import org.hibernate.Transaction;
 import com.eduardamaia.clinica.projetopooclinica.entities.Medico;
 import com.eduardamaia.clinica.projetopooclinica.util.HibernateUtil;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 
 public class MedicoRepository {
 

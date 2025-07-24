@@ -1,6 +1,6 @@
 package com.eduardamaia.clinica.projetopooclinica.entities;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
