@@ -12,7 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.Color; // Importe Color para usar Color.RED/GREEN
 import java.io.IOException;
 
 // You might need to import your user model/service if you have one
@@ -115,8 +115,12 @@ public class CadastrarUsuarioController {
 
             // Set the new scene to the current stage
             stage.setScene(new Scene(root));
-            stage.setTitle("Login"); // Set a title for the login window
-            stage.show(); // Display the login window
+            stage.setTitle("Clínica - Login"); // Define um título para a janela de login
+
+            // --- ADICIONADA ESTA LINHA PARA GARANTIR QUE A TELA PERMANEÇA MAXIMIZADA ---
+            stage.setMaximized(true);
+
+            stage.show(); // Exibe a janela de login (já estava visível, apenas atualiza a cena)
 
         } catch (IOException e) {
             System.err.println("Failed to load the login view: " + e.getMessage());

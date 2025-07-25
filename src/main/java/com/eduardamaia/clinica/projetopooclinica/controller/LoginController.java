@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
+import javafx.scene.control.Button; // Importe Button para o cast no handleRegisterButton
 
 import java.io.IOException;
 
@@ -36,24 +36,30 @@ public class LoginController {
     @FXML
     public void handleRegisterButton(ActionEvent event) {
         try {
-            // Load the FXML for the registration view
-            // Replace "registration-view.fxml" with the actual name of your registration FXML file
+            // Carrega o FXML para a tela de registro
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/CadastrarUsuarioView.fxml"));
             Parent root = loader.load();
 
-            // Get the current stage (window) from the button's scene
+            // Pega o Stage (janela) atual do botão que disparou o evento
+            // O cast para Button é seguro aqui porque event.getSource() é o Button
             Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
 
-            // Set the new scene to the current stage
+            // Define a nova cena no Stage atual
             stage.setScene(new Scene(root));
-            stage.setTitle("Cadastro de Usuário"); // Set a title for the new window
-            stage.show(); // Display the new window
+            stage.setTitle("Clínica - Cadastro de Usuário"); // Define um título para a nova janela
+
+            // --- ADICIONE ESTA LINHA AQUI PARA MANTER A JANELA MAXIMIZADA ---
+            stage.setMaximized(true);
+
+            stage.show(); // Exibe a nova janela (já estava visível, apenas atualiza a cena)
 
         } catch (IOException e) {
-            System.err.println("Failed to load the registration view: " + e.getMessage());
+            System.err.println("Falha ao carregar a tela de registro: " + e.getMessage());
             e.printStackTrace();
-            errorMessageLabel.setText("Erro ao carregar tela de cadastro.");
-            errorMessageLabel.setTextFill(javafx.scene.paint.Color.RED);
+            if (errorMessageLabel != null) { // Verifica se errorMessageLabel não é nulo antes de usá-lo
+                errorMessageLabel.setText("Erro ao carregar tela de cadastro.");
+                errorMessageLabel.setTextFill(javafx.scene.paint.Color.RED);
+            }
         }
     }
 
@@ -72,22 +78,27 @@ public class LoginController {
         if (loginService.authenticateUser(username, password)) {
             System.out.println("Login Successful!");
             try {
-
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
                 Parent root = loader.load();
 
-                // Pega a stage atual a partir do evento
+                // Pega o Stage atual a partir do evento
                 Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
 
                 // Define a nova cena
                 Scene scene = new Scene(root);
                 stage.setScene(scene);
                 stage.setTitle("Clínica - Dashboard");
-                stage.show();
+
+                // --- ADICIONE ESTA LINHA AQUI PARA MANTER A JANELA MAXIMIZADA ---
+                stage.setMaximized(true);
+
+                stage.show(); // Exibe a nova janela (já estava visível, apenas atualiza a cena)
 
             } catch (IOException e) {
                 e.printStackTrace();
-                errorMessageLabel.setText("Erro ao carregar a próxima tela.");
+                if (errorMessageLabel != null) { // Verifica se errorMessageLabel não é nulo antes de usá-lo
+                    errorMessageLabel.setText("Erro ao carregar a próxima tela.");
+                }
             }
         } else {
             if (errorMessageLabel != null) {
