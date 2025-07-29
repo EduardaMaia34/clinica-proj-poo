@@ -208,7 +208,7 @@ public class CadastroMedicoController {
             messageLabel.setTextFill(Color.RED);
             return false;
         }
-        
+
         messageLabel.setText("");
         return true;
     }
