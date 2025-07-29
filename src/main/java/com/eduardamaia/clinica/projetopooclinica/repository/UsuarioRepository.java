@@ -19,7 +19,6 @@ public class UsuarioRepository {
         this.session = session;
     }
 
-    // All methods now use 'this.session' and do NOT open/close sessions or manage transactions.
 
     public void save(Usuario usuario) {
         // Transaction is managed by the service layer

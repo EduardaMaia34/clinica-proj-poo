@@ -12,11 +12,20 @@ public class Medico extends Pessoa{
         super();
     }
 
+    // CONSTRUTOR EXISTENTE (com ID)
     public Medico(String nome, String cpf, String endereco, double valorConsulta, String codigoConselho, int id) {
         super(nome, cpf, endereco, id);
         this.valorConsulta = valorConsulta;
         this.codigoConselho = codigoConselho;
     }
+
+    // NOVO CONSTRUTOR: Sem o ID, para ser usado no cadastro de novos médicos
+    public Medico(String nome, String cpf, String endereco, double valorConsulta, String codigoConselho) {
+        super(nome, cpf, endereco); // Chama o construtor de Pessoa sem ID
+        this.valorConsulta = valorConsulta;
+        this.codigoConselho = codigoConselho;
+    }
+
 
     public double getValorConsulta() {
         return valorConsulta;
@@ -33,5 +42,4 @@ public class Medico extends Pessoa{
     public void setCodigoConselho(String codigoConselho) {
         this.codigoConselho = codigoConselho;
     }
-    
 }
