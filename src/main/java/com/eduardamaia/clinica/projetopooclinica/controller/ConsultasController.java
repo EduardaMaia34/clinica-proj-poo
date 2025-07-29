@@ -20,9 +20,9 @@ public class ConsultasController {
     @FXML
     private TableColumn<Consultas, Integer> colunaId;
     @FXML
-    private TableColumn<Consultas, Integer> colunapacienteId;
+    private TableColumn<Consultas, Integer> colunaPacienteId;
     @FXML
-    private TableColumn<Consultas, Integer> colunamedicoId;
+    private TableColumn<Consultas, Integer> colunaMedicoId;
     @FXML
     private TableColumn<Consultas,String> colunaData;
     @FXML
@@ -40,24 +40,24 @@ public class ConsultasController {
     private TextField campoHora;
 
     @FXML
-    private Button agendar;
+    private Button botaoNovo;
     @FXML
-    private Button cancelar;
+    private Button botaoSalvar;
     @FXML
-    private Button deletar;
+    private Button botaoDeletar;
     @FXML
-    private Button editar;
+    private Button botaoEditar;
 
     private ConsultasService ConsultasService;
 
     //lista observavel para para preencher a tabela e reagir a mudanças
     private ObservableList<Consultas> ObservableListConsultas;
 
-
-    private void Initialize(){
-        colunaId.setCellValueFactory(new PropertyValueFactory<>("ID"));
-        colunaId.setCellValueFactory(new PropertyValueFactory<>("pacienteID"));
-        colunaId.setCellValueFactory(new PropertyValueFactory<>("medicoID"));
+    @FXML
+    private void initialize(){
+        colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colunaId.setCellValueFactory(new PropertyValueFactory<>("pacienteid"));
+        colunaId.setCellValueFactory(new PropertyValueFactory<>("medicoid"));
         colunaId.setCellValueFactory(new PropertyValueFactory<>("Data"));
         colunaId.setCellValueFactory(new PropertyValueFactory<>("Hora"));
 
@@ -154,6 +154,34 @@ public class ConsultasController {
     @FXML
     private void handleDeletarConsulta(){
         Consultas consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
+
+        if(consultaSelecionada==null){
+            mostrarAlerta(Alert.AlertType.WARNING,"Nenhuma seleção ",
+                    "Por favor, selecione a consulta que deseja deletar.");
+            return;
+        }
+        Alert alert = new Alert (Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmação de exclusão");
+        alert.setHeaderText("Você está prestes a deletar uma consulta");
+        alert.setContentText("Tem certeza que deseja remover a consulta de id " + consultaSelecionada.getId() + "?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // 4. Se o usuário confirmar a exclusão (clicando em "OK")
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                // Chama o serviço para deletar a consulta do banco de dados
+                ConsultasService.deletarConsulta(consultaSelecionada.getId());
+                atualizarTabela();
+                // Limpa o formulário
+                handleNovaConsulta();
+
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Consulta deletada com sucesso!");
+
+            } catch (Exception e) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Erro ao Deletar", "Não foi possível deletar a consulta. Erro: " + e.getMessage());
+            }
+        }
     }
 
     private void mostrarConsultaSelecionada(Consultas consulta) {
