@@ -2,6 +2,7 @@ package com.eduardamaia.clinica.projetopooclinica.controller;
 
 import com.eduardamaia.clinica.projetopooclinica.entities.Usuario;
 import com.eduardamaia.clinica.projetopooclinica.service.LoginService;
+import com.eduardamaia.clinica.projetopooclinica.util.SessionManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -68,22 +69,23 @@ public class LoginController {
             return;
         }
 
-
         Usuario authenticatedUser = loginService.authenticateUser(username, password);
 
         if (authenticatedUser != null) {
-            System.out.println("Login Successful!");
+            System.out.println("Login bem-sucedido!");
+
+            SessionManager.setLoggedInUser(authenticatedUser);
+
+
             try {
-                // Load the DashboardView as the primary next screen
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
                 Parent root = loader.load();
 
-                // Get the controller for the DashboardView
-                // You will need a DashboardController class
+                // Para o DashboardController, você AINDA PODE passar o usuário,
+                // mas não é estritamente necessário para o controle de acesso de outras telas
+                // se elas consultarem diretamente o SessionManager.
+                // Isso pode ser útil se o Dashboard precisar exibir o nome do usuário, etc.
                 DashboardController dashboardController = loader.getController();
-
-                // Pass the authenticated user to the DashboardController
-                // so it can manage permissions for various sub-views (like Medicos)
                 if (dashboardController != null) {
                     dashboardController.setLoggedInUser(authenticatedUser);
                 }
@@ -99,11 +101,13 @@ public class LoginController {
                 e.printStackTrace();
                 if (errorMessageLabel != null) {
                     errorMessageLabel.setText("Erro ao carregar a tela do Dashboard.");
+                    errorMessageLabel.setTextFill(javafx.scene.paint.Color.RED);
                 }
             }
         } else {
             if (errorMessageLabel != null) {
                 errorMessageLabel.setText("Usuário ou senha inválidos.");
+                errorMessageLabel.setTextFill(javafx.scene.paint.Color.RED);
             }
             System.out.println("Falha no login para: " + username);
         }

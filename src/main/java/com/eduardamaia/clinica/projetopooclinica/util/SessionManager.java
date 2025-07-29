@@ -1,42 +1,33 @@
 package com.eduardamaia.clinica.projetopooclinica.util;
 
-import com.eduardamaia.clinica.projetopooclinica.entities.Usuario; // Certifique-se de importar Usuario
+import com.eduardamaia.clinica.projetopooclinica.entities.Usuario;
 
-/**
- * Classe para gerenciar a sessão do usuário logado na aplicação.
- * Guarda o objeto Usuario atualmente autenticado.
- */
 public class SessionManager {
-    private static boolean isAdminLoggedIn = false;
+    private static Usuario loggedInUser; // Este campo ESTÁTICO mantém o usuário logado
 
-    public static void setAdminLoggedIn(boolean isAdmin) {
-        isAdminLoggedIn = isAdmin;
-    }
-
-    public static boolean isAdminLoggedIn() {
-        return isAdminLoggedIn;
-    }
-
-    private static Usuario loggedInUser; // O usuário atualmente logado
-
-    public static void login(Usuario user) {
-        if (user == null) {
-            throw new IllegalArgumentException("Usuário não pode ser nulo para o login.");
-        }
+    public static void setLoggedInUser(Usuario user) {
         loggedInUser = user;
-        System.out.println("Usuário logado: " + user.getUsername());
-    }
-
-    public static void logout() {
-        loggedInUser = null;
-        System.out.println("Usuário deslogado.");
+        // Para depuração:
+        if (loggedInUser != null) {
+            System.out.println("SessionManager: Usuário '" + loggedInUser.getUsername() + "' setado na sessão. Admin: " + loggedInUser.getAdministrador());
+        } else {
+            System.out.println("SessionManager: Sessão do usuário limpa (usuário null).");
+        }
     }
 
     public static Usuario getLoggedInUser() {
         return loggedInUser;
     }
 
-    public static boolean isLoggedIn() {
-        return loggedInUser != null;
+    public static boolean isAdminLoggedIn() {
+        // Garante que o usuário não é null E que o atributo administrador não é null, e é true.
+        return loggedInUser != null &&
+                loggedInUser.getAdministrador() != null &&
+                loggedInUser.getAdministrador();
+    }
+
+    public static void clearSession() {
+        loggedInUser = null;
+        System.out.println("SessionManager: Sessão completamente limpa.");
     }
 }
