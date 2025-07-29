@@ -57,7 +57,7 @@ public class RelatorioService {
     }
     public List<Relatorio> buscarPorPaciente(Paciente paciente) {
         Objects.requireNonNull(paciente, "O objeto Paciente não pode ser nulo.");
-        return RelatorioRepository.buscarPorpaciente(paciente);
+        return RelatorioRepository.buscarPorPaciente(paciente);
     }
     public List<Relatorio> buscarPorPeriodo(LocalDate periodo1, LocalDate periodo2) {
         if (periodo1 == null || periodo2 == null) {

@@ -14,8 +14,9 @@ public class RelatorioRepository {
     private int nextId = 1;
 
     public void Salvar(Relatorio relatorio) {
-        if(relatorio.getId() == 0){
+        if(relatorio.getId() == 0) {
             relatorio.setId(nextId++);
+            relatorios.add(relatorio);
         }
     }
     public Relatorio buscarPorId(int id){
@@ -41,7 +42,7 @@ public class RelatorioRepository {
                 .collect(Collectors.toList());
     }
 
-    public List<Relatorio> buscarPorpaciente(Paciente paciente){
+    public List<Relatorio> buscarPorPaciente(Paciente paciente){
         if(paciente == null){
             return new ArrayList<>();
         }
