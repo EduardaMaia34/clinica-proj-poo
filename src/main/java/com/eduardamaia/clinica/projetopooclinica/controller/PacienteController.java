@@ -1,32 +1,33 @@
 // src/main/java/com/eduardamaia/clinica/projetopooclinica/controller/PacienteController.java
 package com.eduardamaia.clinica.projetopooclinica.controller;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
+
 import com.eduardamaia.clinica.projetopooclinica.entities.Paciente;
 import com.eduardamaia.clinica.projetopooclinica.service.PacienteService;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
+import javafx.fxml.Initializable; // Importado para diálogos de confirmação
 import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.Scene; // Importado para customizar células da tabela
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType; // Importado para diálogos de confirmação
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableCell; // Importado para customizar células da tabela
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.TextField; // Adicionado import para List
+import javafx.scene.control.cell.PropertyValueFactory; // Importado para lidar com o resultado de alertas
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.List; // Adicionado import para List
-import java.util.Optional; // Importado para lidar com o resultado de alertas
-import java.util.ResourceBundle;
 
 public class PacienteController implements Initializable {
 
@@ -67,9 +68,9 @@ public class PacienteController implements Initializable {
     @FXML
     private Label messageLabel;
 
-    // ObservableList para manter os dados do paciente para o TableView
+
     private final ObservableList<Paciente> patientData = FXCollections.observableArrayList();
-    private PacienteService pacienteService; // Declarando a instância do serviço
+    private PacienteService pacienteService;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -295,33 +296,63 @@ public class PacienteController implements Initializable {
 
     @FXML
     private void handleMedicosButton(ActionEvent event) {
-        System.out.println("Botão 'Médicos' clicado!");
-        // TODO: Implementar carregamento da tela de médicos (ex: loadView("/views/MedicosView.fxml", "Gerenciar Médicos", event);)
-        showAlert(Alert.AlertType.INFORMATION, "Navegação", "Funcionalidade não implementada", "A tela de Gerenciar Médicos ainda não está disponível.");
+        loadView("/views/MedicoView.fxml", "Gerenciar Pacientes", event);
     }
 
     @FXML
     private void handleConsultasButton(ActionEvent event) {
         System.out.println("Botão 'Consultas' clicado!");
-        // TODO: Implementar carregamento da tela de consultas (ex: loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event);)
+
         showAlert(Alert.AlertType.INFORMATION, "Navegação", "Funcionalidade não implementada", "A tela de Gerenciar Consultas ainda não está disponível.");
     }
 
     @FXML
     private void handleRelatoriosButton(ActionEvent event) {
         System.out.println("Botão 'Relatórios' clicado!");
-        // TODO: Implementar carregamento da tela de relatórios (ex: loadView("/views/RelatoriosView.fxml", "Visualizar Relatórios", event);)
         showAlert(Alert.AlertType.INFORMATION, "Navegação", "Funcionalidade não implementada", "A tela de Relatórios ainda não está disponível.");
     }
 
-    /**
-     * Método auxiliar para exibir alertas.
-     */
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+
+    private void loadView(String fxmlPath, String title, ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+
+            // Pega o Stage atual a partir da fonte do evento
+            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Clínica - " + title);
+
+
+            stage.setMaximized(true);
+
+            stage.show(); // Exibe a janela (na maioria dos casos, já estará visível)
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Exibe um alerta de erro para o usuário se o carregamento do FXML falhar
+            System.err.println("Erro ao carregar a tela: " + fxmlPath + " - " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro de Navegação");
+            alert.setHeaderText("Não foi possível carregar a próxima tela.");
+            alert.setContentText("Verifique se o arquivo FXML existe e o caminho está correto: " + fxmlPath);
+            alert.showAndWait();
+        } catch (Exception e) { // Captura quaisquer outras exceções inesperadas durante o carregamento/exibição
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro Inesperado");
+            alert.setHeaderText("Ocorreu um erro ao tentar abrir a tela.");
+            alert.setContentText("Detalhes: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 }

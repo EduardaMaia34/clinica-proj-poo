@@ -9,21 +9,31 @@ import jakarta.persistence.MappedSuperclass;
 public abstract class Pessoa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id; // MUDANÇA: Usar Integer para permitir 'null' em novos objetos
 
     protected String nome;
     protected String cpf;
     protected String endereco;
 
     public Pessoa() {
+        // Construtor padrão (necessário para Hibernate)
     }
 
-    public Pessoa(String nome, String cpf, String endereco, int id) {
+    // CONSTRUTOR EXISTENTE - AGORA CORRIGIDO E USANDO Integer para id
+    public Pessoa(String nome, String cpf, String endereco, Integer id) {
         this.nome = nome;
         this.cpf = cpf;
         this.endereco = endereco;
+        this.id = id; // CORREÇÃO: Inicializa o campo 'id'
     }
 
+    // NOVO CONSTRUTOR - Para novos objetos onde o ID será gerado pelo BD
+    public Pessoa(String nome, String cpf, String endereco) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.endereco = endereco;
+        // O id não é inicializado aqui, pois será gerado automaticamente pelo banco de dados
+    }
 
     public String getNome() {
         return nome;
@@ -49,12 +59,11 @@ public abstract class Pessoa {
         this.endereco = endereco;
     }
 
-    public int getId() {
+    public Integer getId() { // MUDANÇA: Retorna Integer
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) { // MUDANÇA: Aceita Integer
         this.id = id;
     }
-
 }

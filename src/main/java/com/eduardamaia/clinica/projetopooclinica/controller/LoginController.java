@@ -1,5 +1,6 @@
 package com.eduardamaia.clinica.projetopooclinica.controller;
 
+import com.eduardamaia.clinica.projetopooclinica.entities.Usuario;
 import com.eduardamaia.clinica.projetopooclinica.service.LoginService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -10,7 +11,7 @@ import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button; // Importe Button para o cast no handleRegisterButton
+import javafx.scene.control.Button;
 
 import java.io.IOException;
 
@@ -36,27 +37,19 @@ public class LoginController {
     @FXML
     public void handleRegisterButton(ActionEvent event) {
         try {
-            // Carrega o FXML para a tela de registro
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/CadastrarUsuarioView.fxml"));
             Parent root = loader.load();
 
-            // Pega o Stage (janela) atual do botão que disparou o evento
-            // O cast para Button é seguro aqui porque event.getSource() é o Button
             Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-
-            // Define a nova cena no Stage atual
             stage.setScene(new Scene(root));
-            stage.setTitle("Clínica - Cadastro de Usuário"); // Define um título para a nova janela
-
-            // --- ADICIONE ESTA LINHA AQUI PARA MANTER A JANELA MAXIMIZADA ---
+            stage.setTitle("Clínica - Cadastro de Usuário");
             stage.setMaximized(true);
-
-            stage.show(); // Exibe a nova janela (já estava visível, apenas atualiza a cena)
+            stage.show();
 
         } catch (IOException e) {
             System.err.println("Falha ao carregar a tela de registro: " + e.getMessage());
             e.printStackTrace();
-            if (errorMessageLabel != null) { // Verifica se errorMessageLabel não é nulo antes de usá-lo
+            if (errorMessageLabel != null) {
                 errorMessageLabel.setText("Erro ao carregar tela de cadastro.");
                 errorMessageLabel.setTextFill(javafx.scene.paint.Color.RED);
             }
@@ -75,29 +68,37 @@ public class LoginController {
             return;
         }
 
-        if (loginService.authenticateUser(username, password)) {
+
+        Usuario authenticatedUser = loginService.authenticateUser(username, password);
+
+        if (authenticatedUser != null) {
             System.out.println("Login Successful!");
             try {
+                // Load the DashboardView as the primary next screen
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
                 Parent root = loader.load();
 
-                // Pega o Stage atual a partir do evento
-                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+                // Get the controller for the DashboardView
+                // You will need a DashboardController class
+                DashboardController dashboardController = loader.getController();
 
-                // Define a nova cena
+                // Pass the authenticated user to the DashboardController
+                // so it can manage permissions for various sub-views (like Medicos)
+                if (dashboardController != null) {
+                    dashboardController.setLoggedInUser(authenticatedUser);
+                }
+
+                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
                 Scene scene = new Scene(root);
                 stage.setScene(scene);
                 stage.setTitle("Clínica - Dashboard");
-
-                // --- ADICIONE ESTA LINHA AQUI PARA MANTER A JANELA MAXIMIZADA ---
                 stage.setMaximized(true);
-
-                stage.show(); // Exibe a nova janela (já estava visível, apenas atualiza a cena)
+                stage.show();
 
             } catch (IOException e) {
                 e.printStackTrace();
-                if (errorMessageLabel != null) { // Verifica se errorMessageLabel não é nulo antes de usá-lo
-                    errorMessageLabel.setText("Erro ao carregar a próxima tela.");
+                if (errorMessageLabel != null) {
+                    errorMessageLabel.setText("Erro ao carregar a tela do Dashboard.");
                 }
             }
         } else {
@@ -107,4 +108,5 @@ public class LoginController {
             System.out.println("Falha no login para: " + username);
         }
     }
+
 }

@@ -1,7 +1,7 @@
 package com.eduardamaia.clinica.projetopooclinica.service;
 
 import com.eduardamaia.clinica.projetopooclinica.repository.UsuarioRepository;
-import com.eduardamaia.clinica.projetopooclinica.entities.Usuario;
+import com.eduardamaia.clinica.projetopooclinica.entities.Usuario; // Ensure this points to your Usuario entity
 import com.eduardamaia.clinica.projetopooclinica.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -10,24 +10,26 @@ import java.util.Optional;
 
 public class LoginService {
 
-    // The repository is now created within the methods, receiving the Session
-    // private final UsuarioRepository usuarioRepository; // Not needed as a field if created per method
-
     // Constructor (optional, but good for future dependency injection)
     public LoginService() {
         // No direct repository instantiation here if it depends on a Session that's created per method call.
     }
 
 
-    public boolean authenticateUser(String username, String password) {
+    public Usuario authenticateUser(String username, String password) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            UsuarioRepository usuarioRepository = new UsuarioRepository(session); // <--- Pass the session
+            UsuarioRepository usuarioRepository = new UsuarioRepository(session);
             Optional<Usuario> userOptional = usuarioRepository.findByUsername(username);
 
-            return userOptional.map(user -> password.equals(user.getSenha())).orElse(false);
+            if (userOptional.isPresent() && password.equals(userOptional.get().getSenha())) {
+                return userOptional.get(); // Return the authenticated Usuario object
+            } else {
+                return null; // Authentication failed
+            }
         } catch (Exception e) {
+            System.err.println("Erro no serviço de autenticação: " + e.getMessage());
             e.printStackTrace();
-            return false;
+            return null; // Return null on database error or unexpected exception
         }
     }
 
@@ -38,7 +40,7 @@ public class LoginService {
             session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
 
-            UsuarioRepository usuarioRepository = new UsuarioRepository(session); // <--- Pass the session
+            UsuarioRepository usuarioRepository = new UsuarioRepository(session);
 
             Optional<Usuario> existingUser = usuarioRepository.findByUsername(username);
             if (existingUser.isPresent()) {
@@ -46,13 +48,14 @@ public class LoginService {
                 throw new Exception("Nome de usuário já existe. Por favor, escolha outro.");
             }
 
-            // IMPORTANT: HASH THE PASSWORD HERE BEFORE STORING IT!
+
             Usuario novoUsuario = new Usuario(username, senha);
+
             novoUsuario.setAdministrador(administrador != null ? administrador : false);
 
-            usuarioRepository.save(novoUsuario); // Now save uses the session passed to the repository
+            usuarioRepository.save(novoUsuario); // Save the new user
 
-            transaction.commit(); // Commit the service-level transaction
+            transaction.commit();
             return novoUsuario;
 
         } catch (Exception e) {
@@ -64,16 +67,18 @@ public class LoginService {
             throw new Exception("Erro ao cadastrar usuário: " + e.getMessage());
         } finally {
             if (session != null && session.isOpen()) {
-                session.close(); // Close the service-level session
+                session.close(); // Close the session
             }
         }
     }
 
+
     public Optional<Usuario> getUserByUsername(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            UsuarioRepository usuarioRepository = new UsuarioRepository(session); // <--- Pass the session
+            UsuarioRepository usuarioRepository = new UsuarioRepository(session);
             return usuarioRepository.findByUsername(username);
         } catch (Exception e) {
+            System.err.println("Erro ao buscar usuário por username: " + e.getMessage());
             e.printStackTrace();
             return Optional.empty();
         }
