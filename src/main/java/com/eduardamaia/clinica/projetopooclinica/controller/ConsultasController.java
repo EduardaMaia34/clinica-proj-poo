@@ -2,7 +2,6 @@ package com.eduardamaia.clinica.projetopooclinica.controller;
 
 import com.eduardamaia.clinica.projetopooclinica.entities.Consultas;
 import com.eduardamaia.clinica.projetopooclinica.service.ConsultasService;
-import com.sun.javafx.charts.Legend;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

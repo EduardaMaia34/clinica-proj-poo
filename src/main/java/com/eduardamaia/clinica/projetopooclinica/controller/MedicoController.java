@@ -282,13 +282,13 @@ public class MedicoController implements Initializable {
 
     @FXML
     private void handleConsultasButton(ActionEvent event) {
-        System.out.println("Botão 'Consultas' clicado! Navegando...");
-        loadView("/views/ConsultaView.fxml", "Gerenciar Consultas", event);
+
+        loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event);
     }
 
     @FXML
     private void handleRelatoriosButton(ActionEvent event) {
-        System.out.println("Botão 'Relatórios' clicado! Navegando...");
+
         loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event);
     }
 

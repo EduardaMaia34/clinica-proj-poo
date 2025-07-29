@@ -49,7 +49,7 @@ public class DashboardController implements Initializable {
     @FXML
     private void handleConsultasButton(ActionEvent event) {
         System.out.println("Botão 'Consultas' clicado! Navegando...");
-        loadView("/views/ConsultaView.fxml", "Gerenciar Consultas", event); // Assuming ConsultaView, not ConsultasView
+        loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event); // Assuming ConsultaView, not ConsultasView
     }
 
     @FXML
