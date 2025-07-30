@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 import com.eduardamaia.clinica.projetopooclinica.entities.Medico;
 import com.eduardamaia.clinica.projetopooclinica.entities.Usuario;
+import com.eduardamaia.clinica.projetopooclinica.padroes.MedicoDataChangeListener;
 import com.eduardamaia.clinica.projetopooclinica.service.MedicoService;
 import com.eduardamaia.clinica.projetopooclinica.util.SessionManager;
 
@@ -30,7 +31,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-public class MedicoController implements Initializable {
+public class MedicoController implements Initializable, MedicoDataChangeListener {
 
     @FXML
     private TextField searchMedicoField;
@@ -75,6 +76,7 @@ public class MedicoController implements Initializable {
         System.out.println("MedicoController inicializado!");
 
         this.medicoService = new MedicoService();
+        this.medicoService.addMedicoDataChangeListener(this); //padrao de projeto observador
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         nomeColumn.setCellValueFactory(new PropertyValueFactory<>("nome"));
@@ -186,9 +188,7 @@ public class MedicoController implements Initializable {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 medicoService.excluirMedico(medico.getId());
-                messageLabel.setText("Médico '" + medico.getNome() + "' excluído com sucesso!");
-                messageLabel.setTextFill(javafx.scene.paint.Color.GREEN);
-                listarDadosMedicos();
+
             } catch (Exception e) {
                 messageLabel.setText("Erro ao excluir médico: " + e.getMessage());
                 messageLabel.setTextFill(javafx.scene.paint.Color.RED);
@@ -252,6 +252,10 @@ public class MedicoController implements Initializable {
             stage.setTitle("Clínica - " + (medico != null ? "Editar Médico" : "Cadastro de Médico"));
             stage.setMaximized(true);
             stage.show();
+
+            stage.setOnHidden(e -> {
+                onMedicoDataChanged(null, false); // chama o método do observador para atualizar a tabela
+            });
         } catch (IOException e) {
             System.err.println("Erro ao carregar a tela de cadastro/edição de médico: " + e.getMessage());
             e.printStackTrace();
@@ -322,5 +326,27 @@ public class MedicoController implements Initializable {
         Usuario loggedInUser = SessionManager.getLoggedInUser();
         // Ensure loggedInUser and getAdministrador() are not null to avoid NullPointerException
         return loggedInUser != null && loggedInUser.getAdministrador() != null && loggedInUser.getAdministrador();
+    }
+
+    @Override
+    public void onMedicoDataChanged(String medicoNome, boolean isDeleted) {
+
+        System.out.println("Atualizando tabela.");
+        listarDadosMedicos();
+
+        String message;
+        javafx.scene.paint.Color textColor;
+
+        if (isDeleted) {
+            message = "Médico '" + (medicoNome != null ? medicoNome : "desconhecido") + "' excluído com sucesso!";
+            textColor = javafx.scene.paint.Color.ORANGERED;
+        } else {
+
+            message = "Dados dos médicos atualizados.";
+            textColor = javafx.scene.paint.Color.BLACK;
+        }
+
+        messageLabel.setText(message);
+        messageLabel.setTextFill(javafx.scene.paint.Color.ORANGERED);
     }
 }
