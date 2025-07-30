@@ -13,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class ConsultaController {
     @FXML
     private TableColumn<Consulta, LocalDate> colunaData;
     @FXML
-    private TableColumn<Consulta, LocalTime> colunaHora;
+    private TableColumn<Consulta, String> colunaHora; // Mantido como String para corresponder à sua entidade
     @FXML
     private Button botaoAgendar;
     @FXML
@@ -44,8 +45,6 @@ public class ConsultaController {
 
     private final ConsultaRepository consultaRepository = new ConsultaRepository();
     private final ConsultaService consultaService = new ConsultaService(consultaRepository);
-    // CORREÇÃO: Linha inválida "private ConsultaRepository Consulta;" foi removida.
-
     private ObservableList<Consulta> observableListConsultas;
 
     @FXML
@@ -61,10 +60,53 @@ public class ConsultaController {
     }
 
     private void atualizarTabela() {
-        // CORREÇÃO: Usando o nome de método padronizado que definimos no Service.
         List<Consulta> lista = consultaService.listarTodasConsultas();
         observableListConsultas = FXCollections.observableArrayList(lista);
         tabelaConsultas.setItems(observableListConsultas);
+    }
+
+    // --- AÇÕES DOS BOTÕES ---
+
+    /**
+     * CORREÇÃO PRINCIPAL: Este método agora abre a tela de agendamento.
+     */
+    @FXML
+    private void handleAgendarConsulta() {
+        try {
+            // Carrega o arquivo FXML da tela de agendamento
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AgendarConsultaView.fxml"));
+            Parent root = loader.load();
+
+            // Cria um novo palco (Stage) para a janela de diálogo
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Agendar Nova Consulta");
+            dialogStage.initModality(Modality.WINDOW_MODAL); // Bloqueia a janela principal
+            dialogStage.initOwner(botaoAgendar.getScene().getWindow()); // Define a janela "pai"
+
+            Scene scene = new Scene(root);
+            dialogStage.setScene(scene);
+
+            // Exibe a janela e espera até que ela seja fechada
+            dialogStage.showAndWait();
+
+            // Após fechar a janela, atualiza a tabela para mostrar a nova consulta
+            atualizarTabela();
+
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao Abrir Tela", "Não foi possível carregar a tela de agendamento.");
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleEditarConsulta() {
+        Consulta consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
+        if (consultaSelecionada == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Nenhuma Seleção", "Por favor, selecione uma consulta na tabela para editar.");
+            return;
+        }
+        // Aqui você abriria a tela de formulário, passando a 'consultaSelecionada'
+        System.out.println("Editando consulta: " + consultaSelecionada.getId());
     }
 
     @FXML
@@ -77,45 +119,23 @@ public class ConsultaController {
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmação de Exclusão");
-        alert.setHeaderText("Você está prestes a deletar a consulta do paciente " + consultaSelecionada.getPaciente().getNome() + ".");
+        alert.setHeaderText("Deletar consulta do paciente " + consultaSelecionada.getPaciente().getNome() + "?");
         alert.setContentText("Tem certeza que deseja remover esta consulta?");
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                // CORREÇÃO: Usando o nome de método padronizado que definimos no Service.
                 consultaService.deletarConsulta(consultaSelecionada.getId());
                 atualizarTabela();
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Consulta deletada com sucesso!");
             } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Erro ao Deletar", "Não foi possível deletar a consulta. Erro: " + e.getMessage());
+                mostrarAlerta(Alert.AlertType.ERROR, "Erro ao Deletar", "Não foi possível deletar a consulta: " + e.getMessage());
                 e.printStackTrace();
             }
         }
     }
 
-    // ... O resto do seu controller (handleAgendar, handleEditar, navegação, etc.) pode continuar igual.
-    // Apenas colei o método handleDeletar para mostrar a mudança no nome da chamada do serviço.
-
-    // --- Ações dos Botões ---
-
-    @FXML
-    private void handleAgendarConsulta() {
-        System.out.println("Botão Agendar Clicado!");
-    }
-
-    @FXML
-    private void handleEditarConsulta() {
-        Consulta consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
-        if (consultaSelecionada == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Nenhuma Seleção", "Por favor, selecione uma consulta na tabela para editar.");
-            return;
-        }
-        System.out.println("Editando consulta: " + consultaSelecionada.getId());
-    }
-
-    // --- Métodos de Navegação ---
-
+    // --- MÉTODOS DE NAVEGAÇÃO ---
     @FXML
     private void handlePacientesButton(ActionEvent event) {
         loadView("/views/PacienteView.fxml", "Gerenciar Pacientes", event);
@@ -140,8 +160,7 @@ public class ConsultaController {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
             Stage stage = (Stage) ((Control) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
+            stage.setScene(new Scene(root));
             stage.setTitle("Clínica - " + title);
             stage.setMaximized(true);
             stage.show();
