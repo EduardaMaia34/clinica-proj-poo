@@ -1,0 +1,155 @@
+# Projeto Clínica do Médico Luiz Terceiro
+Projeto desenvolvido por Eduarda Maia, Clawe e Lucas Almeida. Tendo como objetivo criar um sistema para uma clínica juntamente do JavaFX e PostgreSQL.
+
+## Sumário
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- [Começando](#começando)
+  - [Pré-requisitos](#pré-requisitos)
+  - [Instalação](#Instalação)
+- [Uso](#uso)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Detalhes da Implementação](#detalhes-da-implementacao)
+- [Agradecimentos](#agradecimentos)
+
+## Sobre o Projeto
+O Projeto Clínica do Médico Luiz Terceiro foi desenvolvido por Eduarda Maia, Clawe e Lucas Almeida, como uma forma de finalizar o aprendizado do semestre na disciplina de Programação Orientada a Objetos, ministrada pelo Professor Gabriel Gadelha. O software foi concebido para atender às necessidades do Dr. Luiz Terceiro, que está abrindo seu consultório médico em Mossoró. Ele visa fornecer um sistema robusto capaz de controlar o agendamento de consultas e gerenciar informações essenciais da clínica.
+
+## Funcionalidades
+O sistema oferece as seguintes funcionalidades principais:
+
+- Cadastro, Edição e Exclusão:
+Médicos: (nome, CPF, endereço, valor da consulta e Código do conselho)
+Pacientes: (nome, endereço, CPF e prontuário)
+Consultas: (paciente, médico, dia/hora)
+
+- Busca:
+Paciente: por CPF ou nome
+Médico: por código ou nome
+Consultas: por médico, por paciente ou por horários
+
+- Agendamento:
+Marcar consultas
+Cancelar consultas
+
+- Relatórios:
+Gerar relatórios de consultas por médico
+Gerar relatórios de consultas por período
+Gerar relatórios de consultas por paciente
+
+- Controle de Acesso:
+Apenas usuários do tipo gerente podem realizar cadastros de médicos.
+
+## Tecnologias Utilizadas
+Este projeto foi construído com as seguintes tecnologias:
+
+Linguagem: Java
+
+Interface Gráfica: JavaFX
+
+Banco de Dados: PostgreSQL
+
+Controle de Versão: Git
+
+## Começando
+
+### Pré-Requisitos
+Certifique-se de ter o seguinte software instalado em seu ambiente de desenvolvimento:
+
+Java Development Kit (JDK): Versão 17 ou superior.
+
+Maven: Para gerenciamento de dependências do projeto.
+
+PostgreSQL: Servidor de banco de dados instalado e configurado.
+
+pgAdmin (Opcional): Ferramenta gráfica para gerenciar o PostgreSQL.
+
+- Configuração do Banco de Dados PostgreSQL:
+1. Crie um banco de dados no PostgreSQL (ex: clinica_luiz_terceiro).
+2. Crie um usuário e senha para acessar este banco de dados.
+3. Execute os scripts SQL de criação de tabelas (se houver) localizados no diretório src/main/resources/sql (ou onde seus scripts estiverem) no seu banco de dados recém-criado.
+4. Atualize as credenciais de conexão no código: Navegue até o arquivo de configuração do banco de dados (provavelmente em src/main/java/com/clinica/config/DatabaseConfig.java ou similar) e ajuste as credenciais (URL, usuário, senha) para corresponderem à sua configuração local do PostgreSQL.
+
+### Instalação
+1. Clone o Repositório
+git clone https://github.com/EduardaMaia34/clinica-proj-poo.git
+
+2. Navegue ate o diretório do projeto
+
+3. Instale as dependências
+npm install 
+
+4. Configurações do ambiente
+- Entre no Arquivo projeto-poo-clinica/main/src/java/resources/hibernate.cfg.xml
+- Edite esta parte do código com as configurações da sua maquina
+Exemplo: 
+<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+<property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/clinicabd</property>
+<property name="hibernate.connection.username">postgres</property>
+<property name="hibernate.connection.password">senha</property>
+
+## Uso
+Após iniciar a aplicação, você poderá navegar pelas diferentes telas para:
+
+- Gerenciar Médicos: Cadastrar novos médicos, editar informações existentes e excluir registros. Lembre-se que esta ação é restrita a usuários gerentes.
+
+- Gerenciar Pacientes: Adicionar, modificar e remover dados de pacientes, incluindo o prontuário.
+
+- Gerenciar Consultas: Marcar novas consultas, vincular pacientes e médicos, e cancelar agendamentos.
+
+- Realizar Buscas: Utilize os filtros de busca para encontrar rapidamente médicos, pacientes ou consultas específicas por diferentes critérios.
+
+- Gerar Relatórios: Acesse a seção de relatórios para gerar listagens de consultas por médico, período ou paciente.
+
+
+## Estrutura do Projeto
+
+Abaixo está uma visão geral da estrutura de diretórios do projeto, para facilitar a navegação e a compreensão para futuros colaboradores:
+.
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com.eduardamaia.clinica.projetopooclinica/
+│   │   │       ├── controller/       # Classes de controle (lógica das telas JavaFX)
+│   │   │       ├── entities/         # Classes de entidades/modelos de dados
+│   │   │       ├── padroes/          # Classes relacionadas a padrões de projeto
+│   │   │       ├── repository/       # Classes para acesso a dados (camada de persistência)
+│   │   │       ├── service/          # Classes de serviço (lógica de negócio)
+│   │   │       ├── util/             # Classes de utilidade
+│   │   │       ├── HelloApplication.java # (Provável ponto de entrada da aplicação JavaFX)
+│   │   │       └── Main.java         # (Ponto de entrada principal da aplicação)
+│   │   └── resources/
+│   │       ├── com.eduardamaia.clinica.projetopooclinica/ # Possíveis arquivos de recursos específicos do pacote
+│   │       ├── views/                # Arquivos FXML para a interface de usuário
+│   │       └── hibernate.cfg.xml     # Arquivo de configuração do Hibernate (se usado para ORM)
+├── pom.xml                           # Arquivo de configuração Maven
+└── README.md                         # Este arquivo
+
+
+## Detalhes da Implementação
+
+Este projeto segue uma arquitetura baseada em camadas, com uma clara separação de responsabilidades para cada componente do código. Abaixo, detalhamos o propósito de cada pacote principal:
+
+controller/: Contém as classes controladoras para as telas da interface gráfica (JavaFX). Cada controlador é responsável por gerenciar as interações do usuário com a tela, coletar dados dos campos, disparar ações de negócio e atualizar a interface com os resultados. Eles atuam como a ponte entre a View (FXML) e as camadas de serviço/negócio.
+
+entities/: Define as classes de modelo de dados (POJOs - Plain Old Java Objects) que representam as entidades do domínio da clínica, como Medico, Paciente e Consulta. Essas classes contêm apenas os atributos, getters e setters, e são usadas para estruturar os dados que transitam entre as camadas e são persistidos no banco de dados.
+
+padroes/: Este pacote é dedicado à implementação de padrões de projeto específicos que foram aplicados para resolver problemas comuns de design e garantir a escalabilidade e manutenibilidade do código. Neste caso, foram implementador Observer.
+
+repository/: Responsável pela camada de acesso a dados (DAO - Data Access Object). As classes aqui lidam diretamente com a persistência e recuperação de dados do banco de dados PostgreSQL. Elas contêm métodos para operações CRUD (Criar, Ler, Atualizar, Deletar) para cada entidade, abstraindo os detalhes da interação com o banco de dados das camadas superiores.
+
+service/: Contém a lógica de negócio principal da aplicação. As classes de serviço orquestram as operações, aplicando as regras de negócio e validando os dados antes de interagir com a camada de repositório. Por exemplo, a lógica de validação de agendamentos ou de regras para cadastro de médicos (como a restrição para gerentes) estaria aqui.
+
+util/: Contém classes e métodos de utilidade geral que podem ser reutilizados em diferentes partes do projeto. Isso pode incluir funções de formatação de datas, validação de CPFs, tratamento de exceções, ou qualquer outro código auxiliar que não se encaixe diretamente em outras camadas.
+
+HelloApplication.java / Main.java: São os pontos de entrada da aplicação JavaFX. HelloApplication (ou o nome que você deu à sua classe principal JavaFX) provavelmente inicializa a interface de usuário e carrega o primeiro FXML, enquanto Main (se for o caso) pode ser o ponto de partida para a aplicação como um todo, configurando recursos ou o ambiente antes de iniciar a interface gráfica.
+
+A combinação dessas camadas permite um desenvolvimento organizado, facilitando a manutenção, o teste e a expansão futura do sistema.
+
+## Agradecimentos
+Gostaríamos de expressar nossa profunda gratidão a:
+Professor Gabriel Gadelha, pela valiosa orientação e pelos conhecimentos compartilhados na disciplina de Programação Orientada a Objetos, que foram fundamentais para o desenvolvimento e conclusão deste projeto.
+
+
+
