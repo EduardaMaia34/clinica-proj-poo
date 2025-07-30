@@ -1,8 +1,8 @@
 package com.eduardamaia.clinica.projetopooclinica.controller;
 
-import com.eduardamaia.clinica.projetopooclinica.entities.Consulta; // CORREÇÃO: Usando a entidade correta (singular)
+import com.eduardamaia.clinica.projetopooclinica.entities.Consulta;
 import com.eduardamaia.clinica.projetopooclinica.repository.ConsultaRepository;
-import com.eduardamaia.clinica.projetopooclinica.service.ConsultaService; // CORREÇÃO: Usando o service correto (singular)
+import com.eduardamaia.clinica.projetopooclinica.service.ConsultaService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,11 +23,8 @@ import java.util.Optional;
 
 public class ConsultaController {
 
-    // --- FXML Fields que REALMENTE existem no FXML ---
     @FXML
     private TableView<Consulta> tabelaConsultas;
-
-    // CORREÇÃO: Os @FXML agora correspondem exatamente aos fx:id do FXML
     @FXML
     private TableColumn<Consulta, Integer> colunaId;
     @FXML
@@ -38,7 +35,6 @@ public class ConsultaController {
     private TableColumn<Consulta, LocalDate> colunaData;
     @FXML
     private TableColumn<Consulta, LocalTime> colunaHora;
-
     @FXML
     private Button botaoAgendar;
     @FXML
@@ -48,58 +44,27 @@ public class ConsultaController {
 
     private final ConsultaRepository consultaRepository = new ConsultaRepository();
     private final ConsultaService consultaService = new ConsultaService(consultaRepository);
-    private ConsultaRepository Consulta;
-    // --- Serviços e Listas ---
-    // CORREÇÃO: Renomeado para seguir o padrão Java (minúsculo)
+    // CORREÇÃO: Linha inválida "private ConsultaRepository Consulta;" foi removida.
+
     private ObservableList<Consulta> observableListConsultas;
 
     @FXML
     private void initialize() {
-        // Configura como cada coluna da tabela vai obter seus dados
         colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colunaData.setCellValueFactory(new PropertyValueFactory<>("data"));
         colunaHora.setCellValueFactory(new PropertyValueFactory<>("hora"));
 
-        // CORREÇÃO: Lógica para exibir o NOME do paciente/médico, não o objeto inteiro.
-        // Isso pega o objeto Consulta, navega até o objeto Paciente/Medico e pega o nome.
         colunaPaciente.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPaciente().getNome()));
         colunaMedico.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMedico().getNome()));
 
-        // Carrega os dados na tabela
         atualizarTabela();
     }
 
-    /**
-     * Busca todas as consultas no banco de dados e atualiza a tabela.
-     */
     private void atualizarTabela() {
-        if (consultaService == null) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Erro de Serviço", "O serviço de consultas não foi inicializado.");
-            return;
-        }
+        // CORREÇÃO: Usando o nome de método padronizado que definimos no Service.
         List<Consulta> lista = consultaService.listarTodasConsultas();
         observableListConsultas = FXCollections.observableArrayList(lista);
         tabelaConsultas.setItems(observableListConsultas);
-    }
-
-    // --- Ações dos Botões ---
-
-    @FXML
-    private void handleAgendarConsulta() {
-        // Lógica para abrir uma nova janela/modal para agendar uma consulta
-        System.out.println("Botão Agendar Clicado!");
-        // Aqui você chamaria uma nova tela FXML de formulário
-    }
-
-    @FXML
-    private void handleEditarConsulta() {
-        Consulta consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
-        if (consultaSelecionada == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Nenhuma Seleção", "Por favor, selecione uma consulta na tabela para editar.");
-            return;
-        }
-        // Aqui você abriria a tela de formulário, passando a 'consultaSelecionada' para preencher os campos
-        System.out.println("Editando consulta: " + consultaSelecionada.getId());
     }
 
     @FXML
@@ -118,6 +83,7 @@ public class ConsultaController {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
+                // CORREÇÃO: Usando o nome de método padronizado que definimos no Service.
                 consultaService.deletarConsulta(consultaSelecionada.getId());
                 atualizarTabela();
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Consulta deletada com sucesso!");
@@ -128,7 +94,27 @@ public class ConsultaController {
         }
     }
 
-    // --- Métodos de Navegação (mantidos como estavam) ---
+    // ... O resto do seu controller (handleAgendar, handleEditar, navegação, etc.) pode continuar igual.
+    // Apenas colei o método handleDeletar para mostrar a mudança no nome da chamada do serviço.
+
+    // --- Ações dos Botões ---
+
+    @FXML
+    private void handleAgendarConsulta() {
+        System.out.println("Botão Agendar Clicado!");
+    }
+
+    @FXML
+    private void handleEditarConsulta() {
+        Consulta consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
+        if (consultaSelecionada == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Nenhuma Seleção", "Por favor, selecione uma consulta na tabela para editar.");
+            return;
+        }
+        System.out.println("Editando consulta: " + consultaSelecionada.getId());
+    }
+
+    // --- Métodos de Navegação ---
 
     @FXML
     private void handlePacientesButton(ActionEvent event) {
@@ -142,7 +128,6 @@ public class ConsultaController {
 
     @FXML
     private void handleConsultasButton(ActionEvent event) {
-        // Já estamos aqui, mas podemos recarregar se necessário
         loadView("/views/ConsultaView.fxml", "Gerenciar Consultas", event);
     }
 
