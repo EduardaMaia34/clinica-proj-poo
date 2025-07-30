@@ -16,10 +16,9 @@ public class Paciente extends Pessoa{
         this.prontuario = prontuario;
     }
 
-    public Paciente(int i, String nome) {
-    }
-    public Paciente(String nome){
-
+    public Paciente(String nome, String cpf, String endereco, String prontuario) {
+        super(nome, cpf, endereco);
+        this.prontuario = prontuario;
     }
 
     public String getProntuario() {
@@ -32,7 +31,7 @@ public class Paciente extends Pessoa{
 
     @Override
     public String toString() {
-        return getNome(); // Retorna o nome do médico para exibição
+        return "Paciente: " + getNome() + " (Prontuário: " + prontuario + ")";
     }
 
 }

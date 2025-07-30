@@ -26,11 +26,9 @@ public class Medico extends Pessoa{
         this.codigoConselho = codigoConselho;
     }
 
-    public Medico(int i, String s) {
-    }
     @Override
     public String toString() {
-        return getNome(); // Retorna o nome do médico para exibição
+        return "Médico: " + getNome() + " (CRM: " + codigoConselho + ")";
     }
 
 

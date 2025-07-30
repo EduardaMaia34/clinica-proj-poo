@@ -1,7 +1,12 @@
 package com.eduardamaia.clinica.projetopooclinica.controller;
 
 import com.eduardamaia.clinica.projetopooclinica.entities.Consultas;
+import com.eduardamaia.clinica.projetopooclinica.entities.Medico; // Import Medico
+import com.eduardamaia.clinica.projetopooclinica.entities.Paciente; // Import Paciente
 import com.eduardamaia.clinica.projetopooclinica.service.ConsultasService;
+import com.eduardamaia.clinica.projetopooclinica.repository.MedicoRepository; // Import MedicoRepository
+import com.eduardamaia.clinica.projetopooclinica.repository.PacienteRepository; // Import PacienteRepository
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,17 +15,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
+import javafx.beans.property.SimpleStringProperty; // Add this line
 import java.io.IOException;
-
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException; // Added for robust date parsing
 import java.util.Optional;
-
 import java.util.List;
 
 public class ConsultasController {
@@ -29,22 +31,23 @@ public class ConsultasController {
     @FXML
     private TableColumn<Consultas, Integer> colunaId;
     @FXML
-    private TableColumn<Consultas, Integer> colunaPacienteId;
+    private TableColumn<Consultas, String> colunaPacienteNome; // Change to display name
     @FXML
-    private TableColumn<Consultas, Integer> colunaMedicoId;
+    private TableColumn<Consultas, String> colunaMedicoNome;   // Change to display name
     @FXML
-    private TableColumn<Consultas,String> colunaData;
+    private TableColumn<Consultas, LocalDate> colunaData;     // Change to LocalDate
     @FXML
     private TableColumn<Consultas, String> colunaHora;
 
     @FXML
     private TextField campoId;
+    // Changed to ComboBox for selecting existing Pacientes/Medicos by object, not ID
     @FXML
-    private TextField campoPacienteId;
+    private ComboBox<Paciente> campoPaciente; // Changed from TextField to ComboBox
     @FXML
-    private TextField campoMedicoId;
+    private ComboBox<Medico> campoMedico;     // Changed from TextField to ComboBox
     @FXML
-    private TextField campoData;
+    private DatePicker campoDataPicker;       // Changed from TextField to DatePicker
     @FXML
     private TextField campoHora;
 
@@ -58,33 +61,86 @@ public class ConsultasController {
     private Button botaoEditar;
 
     private ConsultasService ConsultasService;
+    private PacienteRepository pacienteRepository = new PacienteRepository(); // Initialize
+    private MedicoRepository medicoRepository = new MedicoRepository();       // Initialize
 
-    //lista observavel para para preencher a tabela e reagir a mudanças
     private ObservableList<Consultas> ObservableListConsultas;
+    private ObservableList<Paciente> listaPacientesComboBox = FXCollections.observableArrayList();
+    private ObservableList<Medico> listaMedicosComboBox = FXCollections.observableArrayList();
+
 
     @FXML
     private void initialize(){
         colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colunaPacienteId.setCellValueFactory(new PropertyValueFactory<>("pacienteid"));
-        colunaMedicoId.setCellValueFactory(new PropertyValueFactory<>("medicoid"));
+
+        // To display names from related entities in TableView
+        colunaPacienteNome.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getPaciente() != null ?
+                        cellData.getValue().getPaciente().getNome() : "N/A"));
+        colunaMedicoNome.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getMedico() != null ?
+                        cellData.getValue().getMedico().getNome() : "N/A"));
+
         colunaData.setCellValueFactory(new PropertyValueFactory<>("data"));
         colunaHora.setCellValueFactory(new PropertyValueFactory<>("hora"));
 
         tabelaConsultas.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) ->
-                        mostrarConsultasSelecionada(newValue));
+                (observable, oldValue, newValue) -> mostrarConsultaSelecionada(newValue)); // Corrected method name
+
+        // Populate ComboBoxes with existing data
+        carregarPacientesNoComboBox();
+        carregarMedicosNoComboBox();
     }
 
-    private void mostrarConsultasSelecionada(Consultas newValue) {
+    private void carregarPacientesNoComboBox() {
+        listaPacientesComboBox.addAll(pacienteRepository.listarTodos());
+        campoPaciente.setItems(listaPacientesComboBox);
+        campoPaciente.setCellFactory(lv -> new ListCell<Paciente>() {
+            @Override
+            protected void updateItem(Paciente item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? "" : item.getNome());
+            }
+        });
+        campoPaciente.setButtonCell(new ListCell<Paciente>() {
+            @Override
+            protected void updateItem(Paciente item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? "" : item.getNome());
+            }
+        });
     }
+
+    private void carregarMedicosNoComboBox() {
+        listaMedicosComboBox.addAll(medicoRepository.listarTodos());
+        campoMedico.setItems(listaMedicosComboBox);
+        campoMedico.setCellFactory(lv -> new ListCell<Medico>() {
+            @Override
+            protected void updateItem(Medico item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? "" : item.getNome());
+            }
+        });
+        campoMedico.setButtonCell(new ListCell<Medico>() {
+            @Override
+            protected void updateItem(Medico item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? "" : item.getNome());
+            }
+        });
+    }
+
 
     public ConsultasController(){
+        // This constructor will be called first, services are set later
     }
+
     public void setConsultasService(ConsultasService consultasService) {
         this.ConsultasService = consultasService;
         // Agora que o serviço está disponível, podemos carregar os dados.
         atualizarTabela();
     }
+
     private void atualizarTabela(){
         if(ConsultasService == null){
             mostrarAlerta(Alert.AlertType.ERROR, "Erro ", "o serviço de consultas não foi inicializado");
@@ -98,36 +154,41 @@ public class ConsultasController {
     @FXML
     private void handleSalvarConsulta() {
         try {
-            int pacienteId = Integer.parseInt(campoPacienteId.getText());
-            int medicoId = Integer.parseInt(campoMedicoId.getText());
-            String data = campoData.getText();
+            // Get selected objects directly from ComboBoxes
+            Paciente pacienteSelecionado = campoPaciente.getSelectionModel().getSelectedItem();
+            Medico medicoSelecionado = campoMedico.getSelectionModel().getSelectedItem();
+            LocalDate data = campoDataPicker.getValue(); // Get value from DatePicker
             String hora = campoHora.getText();
 
-            if (data.isEmpty() || hora.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Erro de Validação", "Data e Hora são campos obrigatórios.");
+            if (pacienteSelecionado == null || medicoSelecionado == null || data == null || hora.isEmpty()) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Erro de Validação", "Todos os campos (Paciente, Médico, Data, Hora) são obrigatórios.");
                 return;
             }
 
             Consultas consulta = new Consultas();
-            consulta.setPaciente(pacienteId);
-            consulta.setMedico(medicoId);
-            consulta.setData(LocalDate.parse(data));
+            consulta.setPaciente(pacienteSelecionado); // Pass the Paciente object
+            consulta.setMedico(medicoSelecionado);     // Pass the Medico object
+            consulta.setData(data);                   // Data is already LocalDate
             consulta.setHora(hora);
 
+            // Determine if it's a new or existing consultation
             if (campoId.getText() == null || campoId.getText().isEmpty()) {
                 ConsultasService.criarConsulta(consulta);
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Consulta agendada com sucesso!");
             } else {
-                int id = Integer.parseInt(campoId.getText());
-                ConsultasService.atualizarConsulta(id, consulta);
+                Integer id = Integer.parseInt(campoId.getText()); // Use Integer for ID
+                ConsultasService.atualizarConsulta(id, consulta); // Assumes your service method takes ID and entity
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Consulta atualizada com sucesso!");
             }
             limparFormulario();
             atualizarTabela();
         } catch (NumberFormatException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Erro de Formato", "ID do Paciente e do Médico devem ser números inteiros.");
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro de Formato", "ID da consulta deve ser um número inteiro, se fornecido.");
+        } catch (DateTimeParseException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro de Formato", "Formato de data inválido. Use AAAA-MM-DD.");
         } catch (Exception e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Erro Inesperado", "Ocorreu um erro: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -135,36 +196,29 @@ public class ConsultasController {
     private void handleEditarConsulta(){
         Consultas consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
 
-        // Verifica se algo foi realmente selecionado
         if (consultaSelecionada != null) {
-            // Preenche os campos de texto com os dados do objeto selecionado
             campoId.setText(String.valueOf(consultaSelecionada.getId()));
-            campoPacienteId.setText(String.valueOf(consultaSelecionada.getPaciente()));
-            campoMedicoId.setText(String.valueOf(consultaSelecionada.getMedico()));
-            campoData.setText(String.valueOf(consultaSelecionada.getData()));
+            // Set ComboBox selections by object, not ID
+            campoPaciente.getSelectionModel().select(consultaSelecionada.getPaciente());
+            campoMedico.getSelectionModel().select(consultaSelecionada.getMedico());
+            campoDataPicker.setValue(consultaSelecionada.getData()); // Set DatePicker value
             campoHora.setText(consultaSelecionada.getHora());
         } else {
-            // Se nada estiver selecionado, avisa o usuário
             mostrarAlerta(Alert.AlertType.WARNING, "Nenhuma Seleção", "Por favor, selecione uma consulta na tabela para editar.");
         }
     }
+
     @FXML
     private void handleNovaConsulta(){
-        tabelaConsultas.getSelectionModel().clearSelection();
-
-        campoId.clear();
-        campoMedicoId.clear();
-        campoPacienteId.clear();
-        campoData.clear();
-        campoHora.clear();
-
-        campoPacienteId.requestFocus();
+        limparFormulario(); // Reusing the clear form method
+        campoPaciente.requestFocus(); // Focus on the first input field
     }
+
     @FXML
     private void handleDeletarConsulta(){
         Consultas consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
 
-        if(consultaSelecionada==null){
+        if(consultaSelecionada == null){
             mostrarAlerta(Alert.AlertType.WARNING,"Nenhuma seleção ",
                     "Por favor, selecione a consulta que deseja deletar.");
             return;
@@ -176,37 +230,37 @@ public class ConsultasController {
 
         Optional<ButtonType> result = alert.showAndWait();
 
-        // Se o usuário confirmar a exclusão (clicando em "OK")
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                // Chama o serviço para deletar a consulta do banco de dados
                 ConsultasService.deletarConsulta(consultaSelecionada.getId());
                 atualizarTabela();
-                // Limpa o formulário
-                handleNovaConsulta();
-
+                limparFormulario(); // Use the dedicated method
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Consulta deletada com sucesso!");
 
             } catch (Exception e) {
                 mostrarAlerta(Alert.AlertType.ERROR, "Erro ao Deletar", "Não foi possível deletar a consulta. Erro: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }
 
+    // Renamed for clarity and to avoid confusion with `mostrarConsultasSelecionada`
     private void mostrarConsultaSelecionada(Consultas consulta) {
         if (consulta != null) {
             campoId.setText(String.valueOf(consulta.getId()));
-            campoPacienteId.setText(String.valueOf(consulta.getPaciente()));
-            campoMedicoId.setText(String.valueOf(consulta.getMedico()));
-            campoData.setText(String.valueOf(consulta.getData()));
+            // Set ComboBox selections by object, not by ID
+            campoPaciente.getSelectionModel().select(consulta.getPaciente());
+            campoMedico.getSelectionModel().select(consulta.getMedico());
+            campoDataPicker.setValue(consulta.getData()); // Set DatePicker value
             campoHora.setText(consulta.getHora());
+        } else {
+            limparFormulario(); // Clear if no selection
         }
     }
 
     @FXML
     private void handleAgendarConsulta() {
         try {
-            // Carrega o arquivo FXML do diálogo
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/views/AgendarConsultaView.fxml"));
             Parent dialogPane = loader.load();
@@ -218,19 +272,19 @@ public class ConsultasController {
             dialogStage.setScene(scene);
 
             dialogStage.showAndWait();
-            atualizarTabela(); // linha para atualizar a lista de consultas
-
+            atualizarTabela();
         } catch (IOException e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro ao Abrir Agendamento", "Não foi possível abrir a tela de agendamento.", e.getMessage());
         }
     }
 
     private void limparFormulario() {
         tabelaConsultas.getSelectionModel().clearSelection();
         campoId.clear();
-        campoPacienteId.clear();
-        campoMedicoId.clear();
-        campoData.clear();
+        campoPaciente.getSelectionModel().clearSelection(); // Clear ComboBox selection
+        campoMedico.getSelectionModel().clearSelection();   // Clear ComboBox selection
+        campoDataPicker.setValue(null);                     // Clear DatePicker
         campoHora.clear();
     }
 
@@ -242,6 +296,7 @@ public class ConsultasController {
         alert.showAndWait();
     }
 
+    // --- Navigation Methods (no changes needed here but included for context) ---
     @FXML
     private void handlePacientesButton(ActionEvent event) {
         System.out.println("Botão 'Pacientes' clicado! Navegando...");
@@ -255,13 +310,11 @@ public class ConsultasController {
 
     @FXML
     private void handleConsultasButton(ActionEvent event) {
-
         loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event);
     }
 
     @FXML
     private void handleRelatoriosButton(ActionEvent event) {
-
         loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event);
     }
 
@@ -282,7 +335,6 @@ public class ConsultasController {
             showAlert(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível carregar a tela.", e.getMessage());
         }
     }
-
 
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
