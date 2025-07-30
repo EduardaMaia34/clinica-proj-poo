@@ -1,9 +1,9 @@
 package com.eduardamaia.clinica.projetopooclinica.controller;
 
-import com.eduardamaia.clinica.projetopooclinica.entities.Consultas;
+import com.eduardamaia.clinica.projetopooclinica.entities.Consulta;
 import com.eduardamaia.clinica.projetopooclinica.entities.Medico;
 import com.eduardamaia.clinica.projetopooclinica.entities.Paciente;
-import com.eduardamaia.clinica.projetopooclinica.repository.ConsultasRepository;
+import com.eduardamaia.clinica.projetopooclinica.repository.ConsultaRepository;
 import com.eduardamaia.clinica.projetopooclinica.repository.MedicoRepository;
 import com.eduardamaia.clinica.projetopooclinica.repository.PacienteRepository;
 
@@ -43,7 +43,7 @@ public class AgendarConsultaController implements Initializable {
 
     private final PacienteRepository pacienteRepository = new PacienteRepository();
     private final MedicoRepository medicoRepository = new MedicoRepository();
-    private final ConsultasRepository consultasRepository = ConsultasRepository.getInstance();
+    private final ConsultaRepository consultasRepository = ConsultaRepository.getInstance();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -103,7 +103,7 @@ public class AgendarConsultaController implements Initializable {
 
             // --- ESTE É O BLOCO DE CÓDIGO QUE PRECISA DE MUDANÇA ---
             // A sua entidade Consultas espera objetos Paciente e Medico, não apenas os IDs.
-            Consultas novaConsulta = new Consultas(
+            Consulta novaConsulta = new Consulta(
                     pacienteSelecionado, // Passa o objeto Paciente selecionado
                     medicoSelecionado,   // Passa o objeto Medico selecionado
                     data,

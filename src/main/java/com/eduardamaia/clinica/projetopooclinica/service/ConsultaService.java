@@ -1,26 +1,26 @@
 package com.eduardamaia.clinica.projetopooclinica.service;
 
-import com.eduardamaia.clinica.projetopooclinica.entities.Consultas;
-import com.eduardamaia.clinica.projetopooclinica.repository.ConsultasRepository;
+import com.eduardamaia.clinica.projetopooclinica.entities.Consulta;
+import com.eduardamaia.clinica.projetopooclinica.repository.ConsultaRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
 
 
-public class ConsultasService {
+public class ConsultaService {
 
-    private final ConsultasRepository consultasRepository;
+    private final ConsultaRepository consultasRepository;
 
-    public ConsultasService(ConsultasRepository consultasRepository) {
+    public ConsultaService(ConsultaRepository consultasRepository) {
         this.consultasRepository = consultasRepository;
     }
 
 
-    public Consultas criarConsulta(Consultas consulta) {
+    public Consulta criarConsulta(Consulta consulta) {
 
         // ⏰ Verifica se o médico já tem uma consulta no mesmo horário
-        List<Consultas> consultasExistentes = consultasRepository.listarTodas();
+        List<Consulta> consultasExistentes = consultasRepository.listarTodas();
 
         boolean conflito = consultasExistentes.stream()
                 .anyMatch(c ->
@@ -36,8 +36,8 @@ public class ConsultasService {
     }
 
 
-    public Consultas buscarConsultaPorId(int id) {
-        Optional<Consultas> consulta = consultasRepository.buscarPorId(id);
+    public Consulta buscarConsultaPorId(int id) {
+        Optional<Consulta> consulta = consultasRepository.buscarPorId(id);
         if (consulta.isEmpty()) {
             throw new EntityNotFoundException("Consulta com ID " + id + " não encontrada.");
         }
@@ -45,13 +45,13 @@ public class ConsultasService {
     }
 
 
-    public List<Consultas> listarTodasConsultas() {
+    public List<Consulta> listarTodasConsultas() {
         return consultasRepository.listarTodas();
     }
 
-    public Consultas atualizarConsulta(int id, Consultas dadosParaAtualizar) {
+    public Consulta atualizarConsulta(int id, Consulta dadosParaAtualizar) {
         // Busca a consulta existente para garantir que ela está no contexto de persistência.
-        Consultas consultaExistente = buscarConsultaPorId(id); // Reutiliza o método que já lança exceção
+        Consulta consultaExistente = buscarConsultaPorId(id);
 
         // Atualiza os campos da entidade existente com os novos dados.
         // As validações nos setters da entidade Consultas serão acionadas aqui.
@@ -60,14 +60,13 @@ public class ConsultasService {
         consultaExistente.setData(dadosParaAtualizar.getData());
         consultaExistente.setHora(dadosParaAtualizar.getHora());
 
-        // O método 'salvar' (que usa merge) irá atualizar a entidade no banco de dados.
         return consultasRepository.salvar(consultaExistente);
     }
 
 
     public void deletarConsulta(int id) {
         // Verifica se a consulta existe antes de tentar deletar.
-        Consultas consultaParaDeletar = buscarConsultaPorId(id);
+        Consulta consultaParaDeletar = buscarConsultaPorId(id);
         consultasRepository.deletarPorId(consultaParaDeletar.getId());
     }
 }

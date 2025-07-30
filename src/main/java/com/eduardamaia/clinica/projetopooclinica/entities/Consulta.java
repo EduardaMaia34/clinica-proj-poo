@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "consultas") // It's good practice to explicitly name your table
-public class Consultas {
+public class Consulta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,18 +27,18 @@ public class Consultas {
     private Relatorio relatorio;
 
     // --- Constructors ---
-    public Consultas() {
+    public Consulta() {
     }
 
     // Adjusted constructor to use entity objects
-    public Consultas(Paciente paciente, Medico medico, LocalDate data, String hora) {
+    public Consulta(Paciente paciente, Medico medico, LocalDate data, String hora) {
         this.paciente = paciente;
         this.medico = medico;
         this.data = data;
         this.hora = hora;
     }
 
-    public Consultas(Integer id, Paciente paciente, Medico medico, LocalDate data, String hora) {
+    public Consulta(Integer id, Paciente paciente, Medico medico, LocalDate data, String hora) {
         this.id = id;
         this.paciente = paciente;
         this.medico = medico;

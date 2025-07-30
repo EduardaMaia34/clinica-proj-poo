@@ -25,7 +25,7 @@
         <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Paciente"/>
         <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Medico"/>
         <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Usuario"/>
-        <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Consultas"/>
+        <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Consulta"/>
         <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Relatorio"/>
 
     </session-factory>

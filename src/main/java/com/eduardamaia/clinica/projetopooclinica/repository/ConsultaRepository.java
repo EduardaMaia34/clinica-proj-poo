@@ -6,28 +6,28 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query; // Import para org.hibernate.query.Query
 
-import com.eduardamaia.clinica.projetopooclinica.entities.Consultas; // Confirme o nome correto da sua entidade
+import com.eduardamaia.clinica.projetopooclinica.entities.Consulta; // Confirme o nome correto da sua entidade
 import com.eduardamaia.clinica.projetopooclinica.util.HibernateUtil; // Reutiliza sua classe de utilidade Hibernate
 
-public class ConsultasRepository {
+public class ConsultaRepository {
 
     // 🔒 Instância Singleton
-    private static ConsultasRepository instancia;
+    private static ConsultaRepository instancia;
 
 
-    private ConsultasRepository() {
+    public ConsultaRepository() {
 
     }
 
     // 🌐 Acesso à instância única
-    public static synchronized ConsultasRepository getInstance() {
+    public static synchronized ConsultaRepository getInstance() {
         if (instancia == null) {
-            instancia = new ConsultasRepository();
+            instancia = new ConsultaRepository();
         }
         return instancia;
     }
 
-    public Consultas salvar(Consultas consulta) {
+    public Consulta salvar(Consulta consulta) {
         Transaction tx = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
@@ -48,10 +48,10 @@ public class ConsultasRepository {
      * @return Um Optional contendo a consulta se encontrada, ou um Optional vazio.
      * @throws RuntimeException se ocorrer um erro durante a operação.
      */
-    public Optional<Consultas> buscarPorId(int id) {
+    public Optional<Consulta> buscarPorId(int id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             // Usa Optional.ofNullable para lidar com o caso de não encontrar a consulta
-            return Optional.ofNullable(session.get(Consultas.class, id));
+            return Optional.ofNullable(session.get(Consulta.class, id));
         } catch (Exception e) {
             throw new RuntimeException("Erro ao buscar consulta por ID: " + e.getMessage(), e);
         }
@@ -62,10 +62,10 @@ public class ConsultasRepository {
      * @return Uma lista de todas as consultas.
      * @throws RuntimeException se ocorrer um erro durante a operação.
      */
-    public List<Consultas> listarTodas() {
+    public List<Consulta> listarTodas() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             // Usar HQL (Hibernate Query Language)
-            Query<Consultas> query = session.createQuery("FROM Consultas", Consultas.class);
+            Query<Consulta> query = session.createQuery("FROM Consultas", Consulta.class);
             return query.list(); // Retorna a lista de resultados
         } catch (Exception e) {
             throw new RuntimeException("Erro ao listar todas as consultas: " + e.getMessage(), e);
@@ -81,7 +81,7 @@ public class ConsultasRepository {
         Transaction tx = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
-            Consultas consulta = session.get(Consultas.class, id); // Busca a consulta primeiro
+            Consulta consulta = session.get(Consulta.class, id); // Busca a consulta primeiro
             if (consulta != null) {
                 session.delete(consulta); // Se encontrada, deleta
             }

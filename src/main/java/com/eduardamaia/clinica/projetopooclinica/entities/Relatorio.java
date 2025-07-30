@@ -24,7 +24,7 @@ public class Relatorio {
 
     // Make sure "mappedBy" refers to the field name in Consultas (relatorio)
     @OneToMany(mappedBy = "relatorio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Consultas> consulta = new HashSet<>();
+    private Set<Consulta> consulta = new HashSet<>();
 
     private LocalDate periodo1;
     private LocalDate periodo2;
@@ -34,7 +34,7 @@ public class Relatorio {
     }
 
     // Adjusted constructor to receive a Set of Consultas and allow for new reports
-    public Relatorio(Medico medico, Paciente paciente, Set<Consultas> consultas, String conteudo, LocalDate periodo1, LocalDate periodo2) {
+    public Relatorio(Medico medico, Paciente paciente, Set<Consulta> consultas, String conteudo, LocalDate periodo1, LocalDate periodo2) {
         setMedico(medico);
         setPaciente(paciente);
         setConteudo(conteudo);
@@ -45,7 +45,7 @@ public class Relatorio {
         }
     }
     // Also consider a constructor for existing entities with an ID
-    public Relatorio(Integer id, Medico medico, Paciente paciente, Set<Consultas> consultas, String conteudo, LocalDate periodo1, LocalDate periodo2) {
+    public Relatorio(Integer id, Medico medico, Paciente paciente, Set<Consulta> consultas, String conteudo, LocalDate periodo1, LocalDate periodo2) {
         this(medico, paciente, consultas, conteudo, periodo1, periodo2); // Call the other constructor
         this.id = id;
     }
@@ -71,11 +71,11 @@ public class Relatorio {
         // }
     }
 
-    public Set<Consultas> getConsultas() {
+    public Set<Consulta> getConsultas() {
         return consulta;
     }
 
-    public void addConsulta(Consultas consulta) {
+    public void addConsulta(Consulta consulta) {
         if (consulta == null) {
             throw new IllegalArgumentException("A consulta a ser adicionada não pode ser nula.");
         }
@@ -87,7 +87,7 @@ public class Relatorio {
         }
     }
 
-    public void removeConsulta(Consultas consulta) {
+    public void removeConsulta(Consulta consulta) {
         if (consulta == null) {
             throw new IllegalArgumentException("A consulta a ser removida não pode ser nula.");
         }
