@@ -85,7 +85,6 @@ public class MedicoController implements Initializable, MedicoDataChangeListener
         valorConsultaColumn.setCellValueFactory(new PropertyValueFactory<>("valorConsulta"));
         codigoConselhoColumn.setCellValueFactory(new PropertyValueFactory<>("codigoConselho"));
 
-        // Set up editColumn
         if (editColumn != null) {
             editColumn.setCellFactory(param -> new TableCell<Medico, Void>() {
                 private final Button editButton = new Button("Editar");
@@ -101,7 +100,7 @@ public class MedicoController implements Initializable, MedicoDataChangeListener
                     if (empty) {
                         setGraphic(null);
                     } else {
-                        // Only show the edit button if the current user is an admin
+
                         editButton.setVisible(getCurrentUserIsAdmin());
                         setGraphic(editButton);
                     }
@@ -109,7 +108,7 @@ public class MedicoController implements Initializable, MedicoDataChangeListener
             });
         }
 
-        // Set up deleteColumn
+
         if (deleteColumn != null) {
             deleteColumn.setCellFactory(param -> new TableCell<Medico, Void>() {
                 private final Button deleteButton = new Button("Excluir");
@@ -137,9 +136,9 @@ public class MedicoController implements Initializable, MedicoDataChangeListener
 
         boolean isAdmin = getCurrentUserIsAdmin();
         registerMedicoButton.setVisible(isAdmin);
-        registerMedicoButton.setManaged(isAdmin); // Ensure it takes up space only if visible
+        registerMedicoButton.setManaged(isAdmin);
 
-        listarDadosMedicos(); // Load data after setting up columns and button visibility
+        listarDadosMedicos();
         System.out.println("Status de administrador (no initialize): " + isAdmin + ". Botão 'Cadastrar Médico' visível: " + registerMedicoButton.isVisible());
     }
 
@@ -272,8 +271,7 @@ public class MedicoController implements Initializable, MedicoDataChangeListener
     @FXML
     private void handleMedicosButton(ActionEvent event) {
         System.out.println("Botão 'Médicos' clicado (já na tela de Médicos).");
-        // When navigating back to Medicos, re-check admin status and update button visibility
-        // This ensures the register button reappears if the admin session is active.
+
         boolean isAdmin = getCurrentUserIsAdmin();
         registerMedicoButton.setVisible(isAdmin);
         registerMedicoButton.setManaged(isAdmin);
@@ -323,7 +321,7 @@ public class MedicoController implements Initializable, MedicoDataChangeListener
 
     private boolean getCurrentUserIsAdmin() {
         Usuario loggedInUser = SessionManager.getLoggedInUser();
-        // Ensure loggedInUser and getAdministrador() are not null to avoid NullPointerException
+
         return loggedInUser != null && loggedInUser.getAdministrador() != null && loggedInUser.getAdministrador();
     }
 

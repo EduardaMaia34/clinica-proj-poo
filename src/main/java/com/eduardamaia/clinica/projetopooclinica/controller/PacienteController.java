@@ -55,15 +55,12 @@ public class PacienteController implements Initializable {
     @FXML
     private TableColumn<Paciente, String> prontuarioColumn;
 
-    // NOVAS COLUNAS PARA AÇÕES (Estas devem ter seus fx:id no FXML)
     @FXML
     private TableColumn<Paciente, Void> editColumn;
     @FXML
     private TableColumn<Paciente, Void> deleteColumn;
 
-    // Remova a referência a acoesColumn se não for usar no FXML
-    // @FXML
-    // private TableColumn<Paciente, Void> acoesColumn;
+
 
     @FXML
     private Label messageLabel;
@@ -76,21 +73,20 @@ public class PacienteController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("PacienteController initialized!");
 
-        // Inicializa o serviço de paciente
+
         this.pacienteService = new PacienteService();
 
-        // 1. Configurar as colunas do TableView para mapear com as propriedades da entidade
+
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         nomeColumn.setCellValueFactory(new PropertyValueFactory<>("nome"));
         cpfColumn.setCellValueFactory(new PropertyValueFactory<>("cpf"));
 
-        // Configurações para as colunas de Endereço e Prontuário
-        enderecoColumn.setCellValueFactory(new PropertyValueFactory<>("endereco")); // Correção: era 'setCellValueallerty' no erro
-        prontuarioColumn.setCellValueFactory(new PropertyValueFactory<>("prontuario")); // Correção: era 'setCellValueallerty' no erro
 
-        // 2. Configurar a coluna de EDITAR (adicionando botões em cada célula)
-        // Isso assume que você adicionou <TableColumn fx:id="editColumn" .../> no seu FXML
-        if (editColumn != null) { // Adicionado verificação para evitar NullPointerException se o FXML não tiver a coluna
+        enderecoColumn.setCellValueFactory(new PropertyValueFactory<>("endereco"));
+        prontuarioColumn.setCellValueFactory(new PropertyValueFactory<>("prontuario"));
+
+
+        if (editColumn != null) {
             editColumn.setCellFactory(param -> new TableCell<Paciente, Void>() {
                 private final Button editButton = new Button("Editar");
                 {
@@ -114,13 +110,11 @@ public class PacienteController implements Initializable {
         }
 
 
-        // 3. Configurar a coluna de DELETAR (adicionando botões em cada célula)
-        // Isso assume que você adicionou <TableColumn fx:id="deleteColumn" .../> no seu FXML
-        if (deleteColumn != null) { // Adicionado verificação para evitar NullPointerException se o FXML não tiver a coluna
+
+        if (deleteColumn != null) {
             deleteColumn.setCellFactory(param -> new TableCell<Paciente, Void>() {
                 private final Button deleteButton = new Button("Excluir");
                 {
-                    // Configura a ação do botão
                     deleteButton.setOnAction(event -> {
                         Paciente paciente = getTableView().getItems().get(getIndex());
                         handleDeletePaciente(paciente); // Chama o método de exclusão
@@ -131,25 +125,21 @@ public class PacienteController implements Initializable {
                 protected void updateItem(Void item, boolean empty) {
                     super.updateItem(item, empty);
                     if (empty) {
-                        setGraphic(null); // Não exibe o botão se a célula estiver vazia
+                        setGraphic(null);
                     } else {
-                        setGraphic(deleteButton); // Exibe o botão na célula
+                        setGraphic(deleteButton);
                     }
                 }
             });
         }
 
 
-        // 4. Definir os dados para o TableView
         patientTableView.setItems(patientData);
 
-        // 5. Carregar dados do banco de dados ao inicializar o controlador
         listarDadosPaciente();
     }
 
-    /**
-     * Carrega os dados dos pacientes do banco de dados e atualiza a TableView.
-     */
+
     private void listarDadosPaciente() {
         try {
             // patientData.clear(); // Limpa dados antigos - esta linha está correta e importante
@@ -166,13 +156,7 @@ public class PacienteController implements Initializable {
         }
     }
 
-    // --- Métodos de Ação para Editar e Deletar ---
 
-    /**
-     * Lida com a edição de um paciente.
-     * Abre a tela de Cadastro/Edição de Paciente pré-preenchida.
-     * @param paciente O paciente a ser editado.
-     */
     private void handleEditPaciente(Paciente paciente) {
         System.out.println("Editar paciente: " + paciente.getNome());
         messageLabel.setText("Editando paciente: " + paciente.getNome());
@@ -208,7 +192,7 @@ public class PacienteController implements Initializable {
         }
     }
 
-    // --- Action Handlers para Botões de UI ---
+
 
     @FXML
     private void handleSearchPatientButton(ActionEvent event) {
@@ -252,10 +236,7 @@ public class PacienteController implements Initializable {
         loadCadastroPacienteView(null); // Passa null para indicar que é um novo cadastro
     }
 
-    /**
-     * Método auxiliar para carregar a tela de cadastro/edição de paciente.
-     * @param paciente Se não for null, o formulário será preenchido para edição. Se for null, é um novo cadastro.
-     */
+
     private void loadCadastroPacienteView(Paciente paciente) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/CadastroPacienteView.fxml"));
@@ -268,7 +249,7 @@ public class PacienteController implements Initializable {
                 cadastroController.setPacienteParaEdicao(paciente); // Define o paciente para edição
             }
 
-            // Obtém o Stage atual da janela
+
             Stage stage = (Stage) patientTableView.getScene().getWindow(); // Alterado para pegar o stage da TableView
             Scene scene = new Scene(root);
             stage.setScene(scene);
@@ -283,7 +264,7 @@ public class PacienteController implements Initializable {
     }
 
 
-    // --- Métodos de Navegação do Menu (no Topo, como no seu FXML) ---
+
     @FXML
     private void handlePacientesButton(ActionEvent event) {
         System.out.println("Botão 'Pacientes' clicado (recarrega a própria tela de Pacientes).");
@@ -322,7 +303,6 @@ public class PacienteController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
-            // Pega o Stage atual a partir da fonte do evento
             Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
 
             Scene scene = new Scene(root);

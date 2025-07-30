@@ -1,6 +1,6 @@
 package com.eduardamaia.clinica.projetopooclinica.controller;
 
-import com.eduardamaia.clinica.projetopooclinica.entities.Usuario; // Import your User model
+import com.eduardamaia.clinica.projetopooclinica.entities.Usuario;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -21,8 +21,7 @@ public class DashboardController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("DashboardController initialized!");
-        // Any initial setup for the dashboard itself can go here.
-        // For example, display welcome message to loggedInUser if needed.
+
     }
 
     public void setLoggedInUser(Usuario user) {
@@ -33,29 +32,27 @@ public class DashboardController implements Initializable {
     @FXML
     private void handlePacientesButton(ActionEvent event) {
         System.out.println("Botão 'Pacientes' clicado! Navegando...");
-        // If PacienteController needs the user role, its initialize method should
-        // also check SessionManager.
+
         loadView("/views/PacienteView.fxml", "Gerenciar Pacientes", event);
     }
 
     @FXML
     private void handleMedicosButton(ActionEvent event) {
         System.out.println("Botão 'Médicos' clicado! Navegando...");
-        // Simply load the MedicoView. The MedicoController's initialize method
-        // will automatically check SessionManager for admin access.
+
         loadView("/views/MedicoView.fxml", "Gerenciar Médicos", event);
     }
 
     @FXML
     private void handleConsultasButton(ActionEvent event) {
         System.out.println("Botão 'Consultas' clicado! Navegando...");
-        loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event); // Assuming ConsultaView, not ConsultasView
+        loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event);
     }
 
     @FXML
     private void handleRelatoriosButton(ActionEvent event) {
         System.out.println("Botão 'Relatórios' clicado! Navegando...");
-        loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event); // Assuming RelatorioView, not RelatoriosView
+        loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event);
     }
 
     private void loadView(String fxmlPath, String title, ActionEvent event) {

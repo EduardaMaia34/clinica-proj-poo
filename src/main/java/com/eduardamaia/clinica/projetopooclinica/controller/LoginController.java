@@ -81,10 +81,7 @@ public class LoginController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
                 Parent root = loader.load();
 
-                // Para o DashboardController, você AINDA PODE passar o usuário,
-                // mas não é estritamente necessário para o controle de acesso de outras telas
-                // se elas consultarem diretamente o SessionManager.
-                // Isso pode ser útil se o Dashboard precisar exibir o nome do usuário, etc.
+
                 DashboardController dashboardController = loader.getController();
                 if (dashboardController != null) {
                     dashboardController.setLoggedInUser(authenticatedUser);
