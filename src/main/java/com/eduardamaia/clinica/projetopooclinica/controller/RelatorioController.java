@@ -35,7 +35,6 @@ public class RelatorioController implements Initializable {
     private Button btnBuscar;
     @FXML
     private Button btnLimparFiltro;
-    //endregion
 
     //region FXML Injections - Tabela
     @FXML
@@ -48,7 +47,6 @@ public class RelatorioController implements Initializable {
     private TableColumn<Relatorio, String> colPaciente;
     @FXML
     private TableColumn<Relatorio, LocalDate> colPeriodo1;
-    //endregion
 
     //region FXML Injections - Formulário de Dados
     @FXML
@@ -69,7 +67,6 @@ public class RelatorioController implements Initializable {
     private Button btnSalvar;
     @FXML
     private Button btnExcluir;
-    //endregion
 
     private RelatorioService relatorioService;
     private MedicoService medicoService;

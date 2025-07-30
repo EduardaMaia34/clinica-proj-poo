@@ -26,6 +26,9 @@ public class Medico extends Pessoa{
         this.codigoConselho = codigoConselho;
     }
 
+    public Medico(int i, String s) {
+    }
+
 
     public double getValorConsulta() {
         return valorConsulta;

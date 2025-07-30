@@ -5,10 +5,18 @@ import com.eduardamaia.clinica.projetopooclinica.service.ConsultasService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+
 import java.util.Optional;
 
 import java.util.List;
@@ -125,16 +133,16 @@ public class ConsultasController {
     private void handleEditarConsulta(){
         Consultas consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
 
-        // 2. Verifica se algo foi realmente selecionado
+        // Verifica se algo foi realmente selecionado
         if (consultaSelecionada != null) {
-            // 3. Preenche os campos de texto com os dados do objeto selecionado
+            // Preenche os campos de texto com os dados do objeto selecionado
             campoId.setText(String.valueOf(consultaSelecionada.getId()));
             campoPacienteId.setText(String.valueOf(consultaSelecionada.getPaciente()));
             campoMedicoId.setText(String.valueOf(consultaSelecionada.getMedico()));
             campoData.setText(consultaSelecionada.getData());
             campoHora.setText(consultaSelecionada.getHora());
         } else {
-            // 4. Se nada estiver selecionado, avisa o usuário
+            // Se nada estiver selecionado, avisa o usuário
             mostrarAlerta(Alert.AlertType.WARNING, "Nenhuma Seleção", "Por favor, selecione uma consulta na tabela para editar.");
         }
     }
@@ -166,7 +174,7 @@ public class ConsultasController {
 
         Optional<ButtonType> result = alert.showAndWait();
 
-        // 4. Se o usuário confirmar a exclusão (clicando em "OK")
+        // Se o usuário confirmar a exclusão (clicando em "OK")
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 // Chama o serviço para deletar a consulta do banco de dados
@@ -190,6 +198,27 @@ public class ConsultasController {
             campoMedicoId.setText(String.valueOf(consulta.getMedico()));
             campoData.setText(consulta.getData());
             campoHora.setText(consulta.getHora());
+        }
+    }
+
+    @FXML
+    private void handleAgendarConsulta() {
+        try {
+            // Carrega o arquivo FXML do diálogo
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/com/eduardamaia/clinica/projetopooclinica/view/ConsultaView.fxml")); // ATENÇÃO: Ajuste o caminho!
+            BorderPane dialogPane = loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Agendar Nova Consulta");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            Scene scene = new Scene(dialogPane);
+            dialogStage.setScene(scene);
+
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
