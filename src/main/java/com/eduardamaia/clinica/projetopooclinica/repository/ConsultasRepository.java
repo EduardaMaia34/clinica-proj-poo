@@ -12,7 +12,7 @@ public class ConsultasRepository {
     private static ConsultasRepository instancia;
 
     // 🔧 EntityManagerFactory e EntityManager
-    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("clinicaPU");
+    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("clinicaPOO");
     private final EntityManager entityManager;
 
     public ConsultasRepository() {
