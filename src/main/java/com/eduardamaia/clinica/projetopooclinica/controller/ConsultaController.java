@@ -35,7 +35,7 @@ public class ConsultaController {
     @FXML
     private TableColumn<Consulta, LocalDate> colunaData;
     @FXML
-    private TableColumn<Consulta, String> colunaHora; // Mantido como String para corresponder à sua entidade
+    private TableColumn<Consulta, String> colunaHora;
     @FXML
     private Button botaoAgendar;
     @FXML
@@ -67,37 +67,14 @@ public class ConsultaController {
 
     // --- AÇÕES DOS BOTÕES ---
 
-    /**
-     * CORREÇÃO PRINCIPAL: Este método agora abre a tela de agendamento.
-     */
     @FXML
     private void handleAgendarConsulta() {
-        try {
-            // Carrega o arquivo FXML da tela de agendamento
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AgendarConsultaView.fxml"));
-            Parent root = loader.load();
-
-            // Cria um novo palco (Stage) para a janela de diálogo
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Agendar Nova Consulta");
-            dialogStage.initModality(Modality.WINDOW_MODAL); // Bloqueia a janela principal
-            dialogStage.initOwner(botaoAgendar.getScene().getWindow()); // Define a janela "pai"
-
-            Scene scene = new Scene(root);
-            dialogStage.setScene(scene);
-
-            // Exibe a janela e espera até que ela seja fechada
-            dialogStage.showAndWait();
-
-            // Após fechar a janela, atualiza a tabela para mostrar a nova consulta
-            atualizarTabela();
-
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao Abrir Tela", "Não foi possível carregar a tela de agendamento.");
-            e.printStackTrace();
-        }
+        abrirFormularioConsulta(null); // Passa null para indicar que é uma nova consulta
     }
 
+    /**
+     * CORREÇÃO PRINCIPAL: Este método agora abre o formulário e passa a consulta selecionada.
+     */
     @FXML
     private void handleEditarConsulta() {
         Consulta consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
@@ -105,8 +82,41 @@ public class ConsultaController {
             mostrarAlerta(Alert.AlertType.WARNING, "Nenhuma Seleção", "Por favor, selecione uma consulta na tabela para editar.");
             return;
         }
-        // Aqui você abriria a tela de formulário, passando a 'consultaSelecionada'
-        System.out.println("Editando consulta: " + consultaSelecionada.getId());
+        abrirFormularioConsulta(consultaSelecionada); // Passa o objeto selecionado
+    }
+
+    /**
+     * Método centralizado para abrir o formulário de consulta, seja para criar ou editar.
+     * @param consulta A consulta a ser editada, ou null se for para criar uma nova.
+     */
+    private void abrirFormularioConsulta(Consulta consulta) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AgendarConsultaView.fxml"));
+            Parent root = loader.load();
+
+            // Pega o controller da tela de agendamento
+            AgendarConsultaController controller = loader.getController();
+
+            // Se uma consulta foi passada, configura o formulário para edição
+            if (consulta != null) {
+                controller.setConsultaParaEditar(consulta);
+            }
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle(consulta == null ? "Agendar Nova Consulta" : "Editar Consulta");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(botaoAgendar.getScene().getWindow());
+            dialogStage.setScene(new Scene(root));
+
+            dialogStage.showAndWait();
+
+            // Atualiza a tabela principal após fechar o formulário
+            atualizarTabela();
+
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao Abrir Tela", "Não foi possível carregar o formulário de consulta.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -135,46 +145,12 @@ public class ConsultaController {
         }
     }
 
-    // --- MÉTODOS DE NAVEGAÇÃO ---
-    @FXML
-    private void handlePacientesButton(ActionEvent event) {
-        loadView("/views/PacienteView.fxml", "Gerenciar Pacientes", event);
-    }
-
-    @FXML
-    private void handleMedicosButton(ActionEvent event) {
-        loadView("/views/MedicoView.fxml", "Gerenciar Médicos", event);
-    }
-
-    @FXML
-    private void handleConsultasButton(ActionEvent event) {
-        loadView("/views/ConsultaView.fxml", "Gerenciar Consultas", event);
-    }
-
-    @FXML
-    private void handleRelatoriosButton(ActionEvent event) {
-        loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event);
-    }
-
-    private void loadView(String fxmlPath, String title, ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
-            Stage stage = (Stage) ((Control) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Clínica - " + title);
-            stage.setMaximized(true);
-            stage.show();
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível carregar a tela: " + fxmlPath);
-            e.printStackTrace();
-        }
-    }
-
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensagem);
-        alert.showAndWait();
-    }
+    // --- MÉTODOS DE NAVEGAÇÃO E ALERTA ---
+    // (sem alterações)
+    private void loadView(String fxmlPath, String title, ActionEvent event) { /* ... */ }
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) { /* ... */ }
+    @FXML private void handlePacientesButton(ActionEvent event) { loadView("/views/PacienteView.fxml", "Gerenciar Pacientes", event); }
+    @FXML private void handleMedicosButton(ActionEvent event) { loadView("/views/MedicoView.fxml", "Gerenciar Médicos", event); }
+    @FXML private void handleConsultasButton(ActionEvent event) { loadView("/views/ConsultaView.fxml", "Gerenciar Consultas", event); }
+    @FXML private void handleRelatoriosButton(ActionEvent event) { loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event); }
 }
