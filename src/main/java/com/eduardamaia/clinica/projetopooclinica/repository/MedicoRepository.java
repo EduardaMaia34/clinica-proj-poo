@@ -9,10 +9,7 @@ import org.hibernate.query.Query; // Import para org.hibernate.query.Query (pref
 import com.eduardamaia.clinica.projetopooclinica.entities.Medico;
 import com.eduardamaia.clinica.projetopooclinica.util.HibernateUtil;
 
-// Se você está usando Hibernate diretamente, org.hibernate.query.Query é geralmente mais idiomático
-// do que jakarta.persistence.TypedQuery para queries HQL.
-// Se sua aplicação for puramente JPA, jakarta.persistence.TypedQuery é o correto.
-// Vou usar org.hibernate.query.Query aqui para consistência com as outras classes Hibernate.
+
 
 public class MedicoRepository {
 
