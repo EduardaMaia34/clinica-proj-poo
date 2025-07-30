@@ -5,10 +5,18 @@ import com.eduardamaia.clinica.projetopooclinica.service.ConsultasService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+
 import java.util.Optional;
 
 import java.util.List;
@@ -19,9 +27,9 @@ public class ConsultasController {
     @FXML
     private TableColumn<Consultas, Integer> colunaId;
     @FXML
-    private TableColumn<Consultas, Integer> colunapacienteId;
+    private TableColumn<Consultas, Integer> colunaPacienteId;
     @FXML
-    private TableColumn<Consultas, Integer> colunamedicoId;
+    private TableColumn<Consultas, Integer> colunaMedicoId;
     @FXML
     private TableColumn<Consultas,String> colunaData;
     @FXML
@@ -39,24 +47,24 @@ public class ConsultasController {
     private TextField campoHora;
 
     @FXML
-    private Button agendar;
+    private Button botaoNovo;
     @FXML
-    private Button cancelar;
+    private Button botaoSalvar;
     @FXML
-    private Button deletar;
+    private Button botaoDeletar;
     @FXML
-    private Button editar;
+    private Button botaoEditar;
 
     private ConsultasService ConsultasService;
 
     //lista observavel para para preencher a tabela e reagir a mudanças
     private ObservableList<Consultas> ObservableListConsultas;
 
-
-    private void Initialize(){
-        colunaId.setCellValueFactory(new PropertyValueFactory<>("ID"));
-        colunaId.setCellValueFactory(new PropertyValueFactory<>("pacienteID"));
-        colunaId.setCellValueFactory(new PropertyValueFactory<>("medicoID"));
+    @FXML
+    private void initialize(){
+        colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colunaId.setCellValueFactory(new PropertyValueFactory<>("pacienteid"));
+        colunaId.setCellValueFactory(new PropertyValueFactory<>("medicoid"));
         colunaId.setCellValueFactory(new PropertyValueFactory<>("Data"));
         colunaId.setCellValueFactory(new PropertyValueFactory<>("Hora"));
 
@@ -125,16 +133,16 @@ public class ConsultasController {
     private void handleEditarConsulta(){
         Consultas consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
 
-        // 2. Verifica se algo foi realmente selecionado
+        // Verifica se algo foi realmente selecionado
         if (consultaSelecionada != null) {
-            // 3. Preenche os campos de texto com os dados do objeto selecionado
+            // Preenche os campos de texto com os dados do objeto selecionado
             campoId.setText(String.valueOf(consultaSelecionada.getId()));
             campoPacienteId.setText(String.valueOf(consultaSelecionada.getPaciente()));
             campoMedicoId.setText(String.valueOf(consultaSelecionada.getMedico()));
             campoData.setText(consultaSelecionada.getData());
             campoHora.setText(consultaSelecionada.getHora());
         } else {
-            // 4. Se nada estiver selecionado, avisa o usuário
+            // Se nada estiver selecionado, avisa o usuário
             mostrarAlerta(Alert.AlertType.WARNING, "Nenhuma Seleção", "Por favor, selecione uma consulta na tabela para editar.");
         }
     }
@@ -153,6 +161,34 @@ public class ConsultasController {
     @FXML
     private void handleDeletarConsulta(){
         Consultas consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
+
+        if(consultaSelecionada==null){
+            mostrarAlerta(Alert.AlertType.WARNING,"Nenhuma seleção ",
+                    "Por favor, selecione a consulta que deseja deletar.");
+            return;
+        }
+        Alert alert = new Alert (Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmação de exclusão");
+        alert.setHeaderText("Você está prestes a deletar uma consulta");
+        alert.setContentText("Tem certeza que deseja remover a consulta de id " + consultaSelecionada.getId() + "?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // Se o usuário confirmar a exclusão (clicando em "OK")
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                // Chama o serviço para deletar a consulta do banco de dados
+                ConsultasService.deletarConsulta(consultaSelecionada.getId());
+                atualizarTabela();
+                // Limpa o formulário
+                handleNovaConsulta();
+
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Consulta deletada com sucesso!");
+
+            } catch (Exception e) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Erro ao Deletar", "Não foi possível deletar a consulta. Erro: " + e.getMessage());
+            }
+        }
     }
 
     private void mostrarConsultaSelecionada(Consultas consulta) {
@@ -162,6 +198,27 @@ public class ConsultasController {
             campoMedicoId.setText(String.valueOf(consulta.getMedico()));
             campoData.setText(consulta.getData());
             campoHora.setText(consulta.getHora());
+        }
+    }
+
+    @FXML
+    private void handleAgendarConsulta() {
+        try {
+            // Carrega o arquivo FXML do diálogo
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/com/eduardamaia/clinica/projetopooclinica/view/ConsultaView.fxml")); // ATENÇÃO: Ajuste o caminho!
+            BorderPane dialogPane = loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Agendar Nova Consulta");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            Scene scene = new Scene(dialogPane);
+            dialogStage.setScene(scene);
+
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

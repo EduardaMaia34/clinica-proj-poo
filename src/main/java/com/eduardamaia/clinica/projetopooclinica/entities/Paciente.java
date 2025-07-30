@@ -16,6 +16,9 @@ public class Paciente extends Pessoa{
         this.prontuario = prontuario;
     }
 
+    public Paciente(int i, String nome) {
+    }
+
     public String getProntuario() {
         return prontuario;
     }
