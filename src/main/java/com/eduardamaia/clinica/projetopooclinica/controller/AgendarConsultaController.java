@@ -1,3 +1,4 @@
+// Arquivo: AgendarConsultaController.java
 package com.eduardamaia.clinica.projetopooclinica.controller;
 
 import com.eduardamaia.clinica.projetopooclinica.entities.Consulta;
@@ -6,7 +7,7 @@ import com.eduardamaia.clinica.projetopooclinica.entities.Paciente;
 import com.eduardamaia.clinica.projetopooclinica.repository.ConsultaRepository;
 import com.eduardamaia.clinica.projetopooclinica.repository.MedicoRepository;
 import com.eduardamaia.clinica.projetopooclinica.repository.PacienteRepository;
-import com.eduardamaia.clinica.projetopooclinica.service.ConsultaService; // Importar o serviço
+import com.eduardamaia.clinica.projetopooclinica.service.ConsultaService;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -37,7 +38,6 @@ public class AgendarConsultaController implements Initializable {
 
     private final PacienteRepository pacienteRepository = new PacienteRepository();
     private final MedicoRepository medicoRepository = new MedicoRepository();
-    // CORREÇÃO: Usar o serviço para encapsular a lógica de negócio
     private final ConsultaRepository consultaRepository = new ConsultaRepository();
     private final ConsultaService consultaService = new ConsultaService(consultaRepository);
 
@@ -61,14 +61,17 @@ public class AgendarConsultaController implements Initializable {
 
     @FXML
     private void handleSalvar() {
-        if (!validarCampos()) return;
+        if (!validarCampos()) {
+            return; // Interrompe a execução se a validação falhar
+        }
 
         try {
             Paciente pacienteSelecionado = comboPaciente.getSelectionModel().getSelectedItem();
             Medico medicoSelecionado = comboMedico.getSelectionModel().getSelectedItem();
             LocalDate data = datePickerData.getValue();
-            // Apenas valida o formato, mas salva como String, conforme a entidade
             String horaTexto = campoHora.getText();
+
+            // Valida o formato da hora antes de continuar
             LocalTime.parse(horaTexto, DateTimeFormatter.ofPattern("HH:mm"));
 
             Consulta novaConsulta = new Consulta(
@@ -78,7 +81,6 @@ public class AgendarConsultaController implements Initializable {
                     horaTexto
             );
 
-            // CORREÇÃO: Usar o serviço para criar a consulta
             consultaService.criarConsulta(novaConsulta);
 
             exibirAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Consulta agendada com sucesso!");
@@ -86,7 +88,7 @@ public class AgendarConsultaController implements Initializable {
 
         } catch (DateTimeParseException e) {
             exibirAlerta(Alert.AlertType.ERROR, "Erro de Formato", "A hora deve estar no formato HH:mm (ex: 14:30).");
-        } catch (IllegalStateException e) { // Captura o erro de conflito do serviço
+        } catch (IllegalStateException e) {
             exibirAlerta(Alert.AlertType.ERROR, "Conflito de Horário", e.getMessage());
         } catch (Exception e) {
             exibirAlerta(Alert.AlertType.ERROR, "Erro Inesperado", "Erro ao agendar consulta: " + e.getMessage());
@@ -99,13 +101,65 @@ public class AgendarConsultaController implements Initializable {
         fecharJanela();
     }
 
-    // Métodos de ajuda (validar, alerta, fechar, etc.)
-    private boolean validarCampos() { /* ... seu código de validação ... */ return true; }
-    private void exibirAlerta(Alert.AlertType tipo, String titulo, String conteudo) { /* ... */ }
+    // --- MÉTODOS DE AJUDA COM IMPLEMENTAÇÃO COMPLETA ---
+
+    private boolean validarCampos() {
+        if (comboPaciente.getSelectionModel().isEmpty() ||
+                comboMedico.getSelectionModel().isEmpty() ||
+                datePickerData.getValue() == null ||
+                campoHora.getText().isBlank()) {
+            exibirAlerta(Alert.AlertType.WARNING, "Campos Incompletos", "Por favor, preencha todos os campos.");
+            return false;
+        }
+        return true;
+    }
+
+    private void exibirAlerta(Alert.AlertType tipo, String titulo, String conteudo) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(conteudo);
+        alert.showAndWait();
+    }
+
     private void fecharJanela() {
         Stage stage = (Stage) botaoSalvar.getScene().getWindow();
         stage.close();
     }
-    private void configurarDisplayComboBoxPaciente() { /* ... */ }
-    private void configurarDisplayComboBoxMedico() { /* ... */ }
+
+    private void configurarDisplayComboBoxPaciente() {
+        // Define como o nome do Paciente deve ser exibido na lista e no campo selecionado
+        comboPaciente.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Paciente item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? "" : item.getNome());
+            }
+        });
+        comboPaciente.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(Paciente item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? "" : item.getNome());
+            }
+        });
+    }
+
+    private void configurarDisplayComboBoxMedico() {
+        // Define como o nome do Médico deve ser exibido na lista e no campo selecionado
+        comboMedico.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Medico item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? "" : item.getNome());
+            }
+        });
+        comboMedico.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(Medico item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? "" : item.getNome());
+            }
+        });
+    }
 }

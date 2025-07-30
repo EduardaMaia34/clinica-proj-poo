@@ -11,11 +11,11 @@ public class Consulta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id; // Use Long for auto-generated IDs, it's generally safer than int
 
-    @ManyToOne(fetch = FetchType.LAZY) // Relacionamento Muitos-Para-Um com Paciente
+    @ManyToOne(fetch = FetchType.EAGER) // Relacionamento Muitos-Para-Um com Paciente
     @JoinColumn(name = "paciente_id", nullable = false) // Coluna FK na tabela 'consultas'
     private Paciente paciente; // <--- CORREÇÃO PRINCIPAL: Referência ao objeto Paciente
 
-    @ManyToOne(fetch = FetchType.LAZY) // Relacionamento Muitos-Para-Um com Medico
+    @ManyToOne(fetch = FetchType.EAGER) // Relacionamento Muitos-Para-Um com Medico
     @JoinColumn(name = "medico_id", nullable = false) // Coluna FK na tabela 'consultas'
     private Medico medico;
 
