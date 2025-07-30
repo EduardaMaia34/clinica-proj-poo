@@ -28,6 +28,10 @@ public class Medico extends Pessoa{
 
     public Medico(int i, String s) {
     }
+    @Override
+    public String toString() {
+        return getNome(); // Retorna o nome do médico para exibição
+    }
 
 
     public double getValorConsulta() {

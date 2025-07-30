@@ -27,4 +27,9 @@ public class Paciente extends Pessoa{
         this.prontuario = prontuario;
     }
 
+    @Override
+    public String toString() {
+        return getNome(); // Retorna o nome do médico para exibição
+    }
+
 }

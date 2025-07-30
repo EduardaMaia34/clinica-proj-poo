@@ -65,10 +65,10 @@ public class ConsultasController {
     @FXML
     private void initialize(){
         colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colunaId.setCellValueFactory(new PropertyValueFactory<>("pacienteid"));
-        colunaId.setCellValueFactory(new PropertyValueFactory<>("medicoid"));
-        colunaId.setCellValueFactory(new PropertyValueFactory<>("Data"));
-        colunaId.setCellValueFactory(new PropertyValueFactory<>("Hora"));
+        colunaPacienteId.setCellValueFactory(new PropertyValueFactory<>("pacienteid"));
+        colunaMedicoId.setCellValueFactory(new PropertyValueFactory<>("medicoid"));
+        colunaData.setCellValueFactory(new PropertyValueFactory<>("Data"));
+        colunaHora.setCellValueFactory(new PropertyValueFactory<>("Hora"));
 
         tabelaConsultas.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) ->
@@ -208,7 +208,7 @@ public class ConsultasController {
         try {
             // Carrega o arquivo FXML do diálogo
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/com/eduardamaia/clinica/projetopooclinica/view/ConsultaView.fxml")); // ATENÇÃO: Ajuste o caminho!
+            loader.setLocation(getClass().getResource("/views/AgendarConsultaView.fxml"));
             BorderPane dialogPane = loader.load();
 
             Stage dialogStage = new Stage();
