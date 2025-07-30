@@ -16,97 +16,59 @@ import javafx.stage.Stage;
 
 public class DashboardController implements Initializable {
 
-    // Field to store the authenticated user for the entire dashboard session
     private Usuario loggedInUser;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("DashboardController initialized!");
-
+        // Any initial setup for the dashboard itself can go here.
+        // For example, display welcome message to loggedInUser if needed.
     }
 
     public void setLoggedInUser(Usuario user) {
         this.loggedInUser = user;
-        System.out.println("User " + user.getUsername() + " logged in to Dashboard. Admin status: " + user.getAdministrador());
+        System.out.println("User " + user.getUsername() + " logged in to Dashboard. Admin status: " + (user.getAdministrador() != null ? user.getAdministrador() : "false/null"));
     }
-
-    // --- Button Action Handlers ---
 
     @FXML
     private void handlePacientesButton(ActionEvent event) {
-        // Here, if PacienteController also needs user role (e.g., to hide a "delete" button),
-        // you would modify loadView to pass the user/admin status.
-        loadView("/views/PacienteView.fxml", "Gerenciar Pacientes", event, null); // Pass null for now, or update loadView
+        System.out.println("Botão 'Pacientes' clicado! Navegando...");
+        // If PacienteController needs the user role, its initialize method should
+        // also check SessionManager.
+        loadView("/views/PacienteView.fxml", "Gerenciar Pacientes", event);
     }
 
     @FXML
     private void handleMedicosButton(ActionEvent event) {
-        // Special handling for MedicoView to pass admin access
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MedicoView.fxml"));
-            Parent root = loader.load();
-
-            MedicoController medicoController = loader.getController();
-            if (medicoController != null && loggedInUser != null) {
-                // Pass the admin status to the MedicoController
-                medicoController.setAdminAccess(loggedInUser.getAdministrador());
-            }
-
-            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Clínica - Gerenciar Medicos");
-            stage.setMaximized(true);
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Erro ao carregar a tela de Médicos: " + e.getMessage());
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro de Navegação");
-            alert.setHeaderText("Não foi possível carregar a tela de médicos.");
-            alert.setContentText("Verifique se o arquivo FXML existe e o caminho está correto: /views/MedicoView.fxml");
-            alert.showAndWait();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro Inesperado");
-            alert.setHeaderText("Ocorreu um erro ao tentar abrir a tela de médicos.");
-            alert.setContentText("Detalhes: " + e.getMessage());
-            alert.showAndWait();
-        }
+        System.out.println("Botão 'Médicos' clicado! Navegando...");
+        // Simply load the MedicoView. The MedicoController's initialize method
+        // will automatically check SessionManager for admin access.
+        loadView("/views/MedicoView.fxml", "Gerenciar Médicos", event);
     }
 
     @FXML
     private void handleConsultasButton(ActionEvent event) {
-        System.out.println("Botão 'Consultas' clicado!");
-        loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event, null); // Assuming ConsultasView also needs a controller to pass data if required
+        System.out.println("Botão 'Consultas' clicado! Navegando...");
+        loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event); // Assuming ConsultaView, not ConsultasView
     }
 
     @FXML
     private void handleRelatoriosButton(ActionEvent event) {
-        System.out.println("Botão 'Relatórios' clicado!");
-        loadView("/views/RelatoriosView.fxml", "Visualizar Relatórios", event, null); // Similar assumption
+        System.out.println("Botão 'Relatórios' clicado! Navegando...");
+        loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event); // Assuming RelatorioView, not RelatoriosView
     }
 
-    // This private helper method can be generalized if you need to pass the user
-    // to other controllers too. For now, it's modified for general use.
-    private void loadView(String fxmlPath, String title, ActionEvent event, Class<?> controllerClassToGet) {
+    private void loadView(String fxmlPath, String title, ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
-            // If you need to access the controller of the loaded view and pass user data,
-            // you'd typically do it here, similar to what's done in handleMedicosButton.
-            // This 'loadView' method might need to be specialized or the calling method
-            // (like handleMedicosButton) handles the controller access directly.
-            // For simplicity, the specific logic for MedicoController is kept in handleMedicosButton.
-
+            // Get the current stage from the event source
             Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Clínica - " + title);
-            stage.setMaximized(true);
+            stage.setMaximized(true); // Keep maximized if desired
             stage.show();
 
         } catch (IOException e) {
@@ -114,8 +76,8 @@ public class DashboardController implements Initializable {
             System.err.println("Erro ao carregar a tela: " + fxmlPath + " - " + e.getMessage());
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erro de Navegação");
-            alert.setHeaderText("Não foi possível carregar a próxima tela.");
-            alert.setContentText("Verifique se o arquivo FXML existe e o caminho está correto: " + fxmlPath);
+            alert.setHeaderText("Não foi possível carregar a tela.");
+            alert.setContentText("Verifique se o arquivo FXML existe e o caminho está correto: " + fxmlPath + "\nDetalhes: " + e.getMessage());
             alert.showAndWait();
         } catch (Exception e) {
             e.printStackTrace();

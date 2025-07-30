@@ -287,8 +287,7 @@ public class PacienteController implements Initializable {
     @FXML
     private void handlePacientesButton(ActionEvent event) {
         System.out.println("Botão 'Pacientes' clicado (recarrega a própria tela de Pacientes).");
-        // Não é necessário carregar a view novamente se já estamos nela.
-        // Apenas recarregamos os dados da tabela.
+
         listarDadosPaciente();
         messageLabel.setText("Tabela de pacientes atualizada.");
         messageLabel.setTextFill(javafx.scene.paint.Color.BLACK);
@@ -301,15 +300,12 @@ public class PacienteController implements Initializable {
 
     @FXML
     private void handleConsultasButton(ActionEvent event) {
-        System.out.println("Botão 'Consultas' clicado!");
-
-        showAlert(Alert.AlertType.INFORMATION, "Navegação", "Funcionalidade não implementada", "A tela de Gerenciar Consultas ainda não está disponível.");
+        loadView("/views/ConsultasView.fxml", "Gerenciar Pacientes", event);
     }
 
     @FXML
     private void handleRelatoriosButton(ActionEvent event) {
-        System.out.println("Botão 'Relatórios' clicado!");
-        showAlert(Alert.AlertType.INFORMATION, "Navegação", "Funcionalidade não implementada", "A tela de Relatórios ainda não está disponível.");
+        loadView("/views/RelatorioView.fxml", "Gerenciar Pacientes", event);
     }
 
     private void showAlert(Alert.AlertType type, String title, String header, String content) {

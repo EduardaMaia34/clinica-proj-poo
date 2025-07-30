@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import com.eduardamaia.clinica.projetopooclinica.entities.Medico; // Sua entidade Medico
-import com.eduardamaia.clinica.projetopooclinica.entities.Usuario; // Importa a entidade Usuario
-import com.eduardamaia.clinica.projetopooclinica.service.MedicoService; // Seu MedicoService
-import com.eduardamaia.clinica.projetopooclinica.util.SessionManager; // Seu SessionManager
+import com.eduardamaia.clinica.projetopooclinica.entities.Medico;
+import com.eduardamaia.clinica.projetopooclinica.entities.Usuario;
+import com.eduardamaia.clinica.projetopooclinica.service.MedicoService;
+import com.eduardamaia.clinica.projetopooclinica.util.SessionManager;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -58,36 +58,22 @@ public class MedicoController implements Initializable {
     private TableColumn<Medico, String> codigoConselhoColumn;
 
     @FXML
-    private TableColumn<Medico, Void> editColumn; // Coluna para o botão de editar
+    private TableColumn<Medico, Void> editColumn;
     @FXML
-    private TableColumn<Medico, Void> deleteColumn; // Coluna para o botão de excluir
+    private TableColumn<Medico, Void> deleteColumn;
 
     @FXML
-    private Label messageLabel; // Label para mensagens ao usuário
+    private Label messageLabel;
 
     private final ObservableList<Medico> medicoData = FXCollections.observableArrayList();
     private MedicoService medicoService;
 
-    //user tipo ADMIN
-    private boolean isAdmin = false;
-    public void setAdminAccess(boolean isAdmin) {
-        this.isAdmin = isAdmin;
-        updateButtonVisibility();
-    }
-    public void checkSessionAdminStatus() {
-        this.isAdmin = SessionManager.isAdminLoggedIn();
-        updateButtonVisibility();
-    }
-    private void updateButtonVisibility() {
-        registerMedicoButton.setVisible(isAdmin);
-        registerMedicoButton.setManaged(isAdmin);
-    }
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("MedicoController inicializado!");
 
-        // Inicializa o serviço de médico
         this.medicoService = new MedicoService();
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -97,6 +83,7 @@ public class MedicoController implements Initializable {
         valorConsultaColumn.setCellValueFactory(new PropertyValueFactory<>("valorConsulta"));
         codigoConselhoColumn.setCellValueFactory(new PropertyValueFactory<>("codigoConselho"));
 
+        // Set up editColumn
         if (editColumn != null) {
             editColumn.setCellFactory(param -> new TableCell<Medico, Void>() {
                 private final Button editButton = new Button("Editar");
@@ -112,7 +99,7 @@ public class MedicoController implements Initializable {
                     if (empty) {
                         setGraphic(null);
                     } else {
-                        // Opcional: só mostra o botão de editar se for admin
+                        // Only show the edit button if the current user is an admin
                         editButton.setVisible(getCurrentUserIsAdmin());
                         setGraphic(editButton);
                     }
@@ -120,7 +107,7 @@ public class MedicoController implements Initializable {
             });
         }
 
-
+        // Set up deleteColumn
         if (deleteColumn != null) {
             deleteColumn.setCellFactory(param -> new TableCell<Medico, Void>() {
                 private final Button deleteButton = new Button("Excluir");
@@ -136,7 +123,7 @@ public class MedicoController implements Initializable {
                     if (empty) {
                         setGraphic(null);
                     } else {
-
+                        // Only show the delete button if the current user is an admin
                         deleteButton.setVisible(getCurrentUserIsAdmin());
                         setGraphic(deleteButton);
                     }
@@ -144,19 +131,14 @@ public class MedicoController implements Initializable {
             });
         }
 
-        // 4. Define os dados para o TableView
         medicoTableView.setItems(medicoData);
 
-        // 5. Carrega dados do banco de dados ao inicializar o controlador
-        listarDadosMedicos();
-
-        // 6. Condicionalmente mostra/esconde o botão "Cadastrar Médico"
-        // Este é o botão principal de adicionar.
         boolean isAdmin = getCurrentUserIsAdmin();
         registerMedicoButton.setVisible(isAdmin);
-        registerMedicoButton.setManaged(isAdmin);
-        System.out.println("Status de administrador: " + isAdmin + ". Botão 'Cadastrar Médico' visível: " + registerMedicoButton.isVisible());
+        registerMedicoButton.setManaged(isAdmin); // Ensure it takes up space only if visible
 
+        listarDadosMedicos(); // Load data after setting up columns and button visibility
+        System.out.println("Status de administrador (no initialize): " + isAdmin + ". Botão 'Cadastrar Médico' visível: " + registerMedicoButton.isVisible());
     }
 
 
@@ -203,11 +185,10 @@ public class MedicoController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                // Chama o serviço para excluir
                 medicoService.excluirMedico(medico.getId());
                 messageLabel.setText("Médico '" + medico.getNome() + "' excluído com sucesso!");
                 messageLabel.setTextFill(javafx.scene.paint.Color.GREEN);
-                listarDadosMedicos(); // Recarrega a tabela para remover o médico excluído
+                listarDadosMedicos();
             } catch (Exception e) {
                 messageLabel.setText("Erro ao excluir médico: " + e.getMessage());
                 messageLabel.setTextFill(javafx.scene.paint.Color.RED);
@@ -218,19 +199,17 @@ public class MedicoController implements Initializable {
         }
     }
 
-    // --- Action Handlers para Botões de UI ---
     @FXML
     private void handleSearchMedicoButton(ActionEvent event) {
         String searchText = searchMedicoField.getText().trim();
         if (searchText.isEmpty()) {
-            listarDadosMedicos(); // Se o campo de busca estiver vazio, recarrega todos os médicos
+            listarDadosMedicos();
             messageLabel.setText("Campo de busca vazio. Exibindo todos os médicos.");
             messageLabel.setTextFill(javafx.scene.paint.Color.BLACK);
             return;
         }
 
         try {
-            // Usa o serviço para buscar médicos filtrados por nome ou código
             List<Medico> resultados = medicoService.buscarMedicosPorNomeOuCodigo(searchText);
 
             medicoData.clear();
@@ -253,24 +232,20 @@ public class MedicoController implements Initializable {
 
     @FXML
     private void handleRegisterMedicoButton(ActionEvent event) {
-
         loadCadastroMedicoView(null);
     }
 
-    
     private void loadCadastroMedicoView(Medico medico) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/CadastroMedicoView.fxml"));
             Parent root = loader.load();
 
-            // Obtenha o controlador da tela de cadastro
             CadastroMedicoController cadastroController = loader.getController();
 
             if (medico != null) {
                 cadastroController.setMedicoParaEdicao(medico);
             }
 
-            // Obtém o Stage atual da janela e define a nova cena
             Stage stage = (Stage) medicoTableView.getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
@@ -284,7 +259,6 @@ public class MedicoController implements Initializable {
         }
     }
 
-    // --- Métodos de Navegação do Menu (no Topo, como no seu FXML) ---
     @FXML
     private void handlePacientesButton(ActionEvent event) {
         System.out.println("Botão 'Pacientes' clicado! Navegando...");
@@ -294,24 +268,30 @@ public class MedicoController implements Initializable {
     @FXML
     private void handleMedicosButton(ActionEvent event) {
         System.out.println("Botão 'Médicos' clicado (já na tela de Médicos).");
-        listarDadosMedicos(); // Apenas atualiza os dados da tabela se já estiver na tela
+        // When navigating back to Medicos, re-check admin status and update button visibility
+        // This ensures the register button reappears if the admin session is active.
+        boolean isAdmin = getCurrentUserIsAdmin();
+        registerMedicoButton.setVisible(isAdmin);
+        registerMedicoButton.setManaged(isAdmin);
+        System.out.println("Status de administrador (handleMedicosButton): " + isAdmin + ". Botão 'Cadastrar Médico' visível: " + registerMedicoButton.isVisible());
+
+        listarDadosMedicos();
         messageLabel.setText("Tabela de médicos atualizada.");
         messageLabel.setTextFill(javafx.scene.paint.Color.BLACK);
     }
 
     @FXML
     private void handleConsultasButton(ActionEvent event) {
-        System.out.println("Botão 'Consultas' clicado! Navegando...");
-        loadView("/views/ConsultaView.fxml", "Gerenciar Consultas", event);
+
+        loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event);
     }
 
     @FXML
     private void handleRelatoriosButton(ActionEvent event) {
-        System.out.println("Botão 'Relatórios' clicado! Navegando...");
+
         loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event);
     }
 
-    
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -320,13 +300,11 @@ public class MedicoController implements Initializable {
         alert.showAndWait();
     }
 
-    
     private void loadView(String fxmlPath, String title, ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
-            // Pega o Stage da janela que disparou o evento (o botão do menu)
             Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
@@ -340,10 +318,9 @@ public class MedicoController implements Initializable {
         }
     }
 
-
     private boolean getCurrentUserIsAdmin() {
         Usuario loggedInUser = SessionManager.getLoggedInUser();
-        
+        // Ensure loggedInUser and getAdministrador() are not null to avoid NullPointerException
         return loggedInUser != null && loggedInUser.getAdministrador() != null && loggedInUser.getAdministrador();
     }
 }

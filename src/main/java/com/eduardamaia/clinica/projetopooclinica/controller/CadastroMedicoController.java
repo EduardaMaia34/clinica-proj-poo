@@ -80,11 +80,11 @@ public class CadastroMedicoController {
         }
 
         try {
-            // Coleta os dados dos campos
+
             String nome = nomeField.getText().trim();
             String cpf = cpfField.getText().trim();
             String endereco = enderecoField.getText().trim();
-            // Substitui vírgula por ponto para garantir que Double.parseDouble funcione corretamente
+
             double valorConsulta = Double.parseDouble(valorConsultaField.getText().trim().replace(",", "."));
             String codigoConselho = codigoConselhoField.getText().trim();
 
@@ -108,6 +108,8 @@ public class CadastroMedicoController {
 
             messageLabel.setText("Médico salvo com sucesso!");
             messageLabel.setTextFill(Color.GREEN);
+
+            loadView("/views/MedicoView.fxml", "Gerenciar Médicos", event);
 
             // Se for um novo cadastro, limpa os campos para um novo input
             if (medicoParaEdicao == null) {
@@ -207,14 +209,10 @@ public class CadastroMedicoController {
             return false;
         }
 
-        // Limpa a mensagem de erro se tudo estiver ok
         messageLabel.setText("");
         return true;
     }
 
-    /**
-     * Limpa todos os campos do formulário.
-     */
     private void clearFields() {
         nomeField.setText("");
         cpfField.setText("");
@@ -224,18 +222,42 @@ public class CadastroMedicoController {
         idField.setText(""); // Garante que o ID oculto também seja limpo
     }
 
-    /**
-     * Exibe um alerta pop-up para o usuário.
-     * @param type Tipo do alerta (ERROR, WARNING, INFORMATION, etc.)
-     * @param title Título da janela do alerta.
-     * @param header Texto do cabeçalho do alerta.
-     * @param content Conteúdo principal da mensagem do alerta.
-     */
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    private void loadView(String fxmlPath, String title, ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+
+            // Get the current stage from the event source
+            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Clínica - " + title);
+            stage.setMaximized(true); // Keep maximized if desired
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Erro ao carregar a tela: " + fxmlPath + " - " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro de Navegação");
+            alert.setHeaderText("Não foi possível carregar a tela.");
+            alert.setContentText("Verifique se o arquivo FXML existe e o caminho está correto: " + fxmlPath + "\nDetalhes: " + e.getMessage());
+            alert.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro Inesperado");
+            alert.setHeaderText("Ocorreu um erro ao tentar abrir a tela.");
+            alert.setContentText("Detalhes: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 }
