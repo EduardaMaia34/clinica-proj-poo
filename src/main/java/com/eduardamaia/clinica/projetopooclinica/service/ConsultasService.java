@@ -2,12 +2,10 @@ package com.eduardamaia.clinica.projetopooclinica.service;
 
 import com.eduardamaia.clinica.projetopooclinica.entities.Consultas;
 import com.eduardamaia.clinica.projetopooclinica.repository.ConsultasRepository;
-import com.eduardamaia.clinica.projetopooclinica.repository.PacienteRepository;
-import com.eduardamaia.clinica.projetopooclinica.entities.Paciente;
-import com.eduardamaia.clinica.projetopooclinica.service.PacienteService;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public class ConsultasService {
@@ -39,11 +37,11 @@ public class ConsultasService {
 
 
     public Consultas buscarConsultaPorId(int id) {
-        Consultas consulta = consultasRepository.buscarPorId(id);
-        if (consulta == null) {
+        Optional<Consultas> consulta = consultasRepository.buscarPorId(id);
+        if (consulta.isEmpty()) {
             throw new EntityNotFoundException("Consulta com ID " + id + " não encontrada.");
         }
-        return consulta;
+        return consulta.get();
     }
 
 
