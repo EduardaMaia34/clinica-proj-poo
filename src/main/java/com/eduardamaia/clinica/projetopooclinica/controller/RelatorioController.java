@@ -3,8 +3,8 @@ package com.eduardamaia.clinica.projetopooclinica.controller;
 import com.eduardamaia.clinica.projetopooclinica.entities.Medico;
 import com.eduardamaia.clinica.projetopooclinica.entities.Paciente;
 import com.eduardamaia.clinica.projetopooclinica.entities.Relatorio;
-import com.eduardamaia.clinica.projetopooclinica.service.MedicoService; // Assumindo que esta classe existe
-import com.eduardamaia.clinica.projetopooclinica.service.PacienteService; // Assumindo que esta classe existe
+import com.eduardamaia.clinica.projetopooclinica.service.MedicoService;
+import com.eduardamaia.clinica.projetopooclinica.service.PacienteService;
 import com.eduardamaia.clinica.projetopooclinica.service.RelatorioService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class RelatorioController implements Initializable {
 
@@ -41,6 +42,7 @@ public class RelatorioController implements Initializable {
     private Button btnBuscar;
     @FXML
     private Button btnLimparFiltro;
+    //endregion
 
     //region FXML Injections - Tabela
     @FXML
@@ -53,6 +55,9 @@ public class RelatorioController implements Initializable {
     private TableColumn<Relatorio, String> colPaciente;
     @FXML
     private TableColumn<Relatorio, LocalDate> colPeriodo1;
+    @FXML
+    private TableColumn<Relatorio, LocalDate> colPeriodo2;
+    //endregion
 
     //region FXML Injections - Formulário de Dados
     @FXML
@@ -66,13 +71,14 @@ public class RelatorioController implements Initializable {
     @FXML
     private DatePicker datePickerPeriodo2;
     @FXML
-    private TextArea textAreaConteudo;
+    private TextArea textAreaConteudo; // ADICIONADO: Campo que estava faltando
     @FXML
     private Button btnNovo;
     @FXML
     private Button btnSalvar;
     @FXML
     private Button btnExcluir;
+    //endregion
 
     private RelatorioService relatorioService;
     private MedicoService medicoService;
@@ -83,10 +89,9 @@ public class RelatorioController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Instancia os serviços
         this.relatorioService = new RelatorioService();
-        this.medicoService = new MedicoService(); // Dependência necessária
-        this.pacienteService = new PacienteService(); // Dependência necessária
+        this.medicoService = new MedicoService();
+        this.pacienteService = new PacienteService();
 
         initializeNodes();
         loadMedicoComboBoxes();
@@ -95,15 +100,13 @@ public class RelatorioController implements Initializable {
     }
 
     private void initializeNodes() {
-        // Configura as colunas da tabela
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colPeriodo1.setCellValueFactory(new PropertyValueFactory<>("periodo1"));
+        colPeriodo2.setCellValueFactory(new PropertyValueFactory<>("periodo2"));
 
-        // Para exibir o nome do médico/paciente em vez do objeto
         colMedico.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMedico().getNome()));
         colPaciente.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPaciente().getNome()));
 
-        // Adiciona um listener para atualizar o formulário ao selecionar um item na tabela
         tableViewRelatorios.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> updateFormData(newValue)
         );
@@ -117,14 +120,14 @@ public class RelatorioController implements Initializable {
     }
 
     private void loadMedicoComboBoxes() {
-        List<Medico> medicoList = medicoService.listarMedicos(); // Assumindo que este método existe
+        List<Medico> medicoList = medicoService.listarMedicos();
         obsListMedicos = FXCollections.observableArrayList(medicoList);
         comboBoxMedico.setItems(obsListMedicos);
         comboBuscaMedico.setItems(obsListMedicos);
     }
 
     private void loadPacienteComboBoxes() {
-        List<Paciente> pacienteList = pacienteService.listarPacientes(); // Assumindo que este método existe
+        List<Paciente> pacienteList = pacienteService.listarPacientes();
         obsListPacientes = FXCollections.observableArrayList(pacienteList);
         comboBoxPaciente.setItems(obsListPacientes);
         comboBuscaPaciente.setItems(obsListPacientes);
@@ -134,12 +137,21 @@ public class RelatorioController implements Initializable {
     public void onBtnNovoAction() {
         clearForm();
         tableViewRelatorios.getSelectionModel().clearSelection();
+        comboBoxMedico.requestFocus();
     }
 
     @FXML
     public void onBtnSalvarAction() {
         try {
             Relatorio relatorio = getFormData();
+            // Validação simples
+            if (relatorio.getMedico() == null || relatorio.getPaciente() == null || relatorio.getPeriodo1() == null || relatorio.getPeriodo2() == null) {
+                throw new IllegalArgumentException("Todos os campos, exceto o conteúdo, são obrigatórios.");
+            }
+            if(relatorio.getPeriodo1().isAfter(relatorio.getPeriodo2())){
+                throw new IllegalArgumentException("A data de início não pode ser posterior à data final.");
+            }
+
             if (relatorio.getId() == 0) {
                 relatorioService.criarRelatorio(relatorio);
                 showAlertDialog(Alert.AlertType.INFORMATION, "Sucesso", "Relatório criado com sucesso!");
@@ -162,12 +174,10 @@ public class RelatorioController implements Initializable {
             return;
         }
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmação de Exclusão");
-        alert.setHeaderText("Você está prestes a excluir o relatório ID: " + selectedRelatorio.getId());
-        alert.setContentText("Você tem certeza que deseja continuar?");
+        Optional<ButtonType> result = showConfirmationDialog("Confirmação de Exclusão",
+                "Você está prestes a excluir o relatório ID: " + selectedRelatorio.getId(),
+                "Você tem certeza que deseja continuar?");
 
-        Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             if (relatorioService.excluirRelatorio(selectedRelatorio.getId())) {
                 showAlertDialog(Alert.AlertType.INFORMATION, "Sucesso", "Relatório excluído com sucesso!");
@@ -179,32 +189,44 @@ public class RelatorioController implements Initializable {
         }
     }
 
+    // LÓGICA DE BUSCA MELHORADA: Permite combinar filtros
     @FXML
     public void onBtnBuscarAction() {
-        List<Relatorio> filteredList;
-        Medico medico = comboBuscaMedico.getValue();
-        Paciente paciente = comboBuscaPaciente.getValue();
+        List<Relatorio> filteredList = relatorioService.listartodos();
+
+        Medico medicoFiltro = comboBuscaMedico.getValue();
+        if (medicoFiltro != null) {
+            filteredList = filteredList.stream()
+                    .filter(r -> r.getMedico().equals(medicoFiltro))
+                    .collect(Collectors.toList());
+        }
+
+        Paciente pacienteFiltro = comboBuscaPaciente.getValue();
+        if (pacienteFiltro != null) {
+            filteredList = filteredList.stream()
+                    .filter(r -> r.getPaciente().equals(pacienteFiltro))
+                    .collect(Collectors.toList());
+        }
+
         LocalDate inicio = datePickerBuscaPeriodo1.getValue();
         LocalDate fim = datePickerBuscaPeriodo2.getValue();
-
-        if (medico != null) {
-            filteredList = relatorioService.buscarPorMedico(medico);
-        } else if (paciente != null) {
-            filteredList = relatorioService.buscarPorPaciente(paciente);
-        } else if (inicio != null && fim != null) {
-            try {
-                filteredList = relatorioService.buscarPorPeriodo(inicio, fim);
-            } catch (IllegalArgumentException e) {
-                showAlertDialog(Alert.AlertType.ERROR, "Erro de Busca", e.getMessage());
+        if (inicio != null && fim != null) {
+            if (inicio.isAfter(fim)) {
+                showAlertDialog(Alert.AlertType.ERROR, "Erro de Busca", "A data de início não pode ser posterior à data de fim.");
                 return;
             }
-        } else {
-            showAlertDialog(Alert.AlertType.WARNING, "Filtro Incompleto", "Selecione um médico, paciente ou um período de datas para buscar.");
+            filteredList = filteredList.stream()
+                    .filter(r -> !r.getPeriodo1().isBefore(inicio) && !r.getPeriodo2().isAfter(fim))
+                    .collect(Collectors.toList());
+        } else if (inicio != null || fim != null) {
+            showAlertDialog(Alert.AlertType.WARNING, "Filtro Incompleto", "Para filtrar por período, ambas as datas (início e fim) devem ser preenchidas.");
             return;
         }
+
         obsListRelatorios = FXCollections.observableArrayList(filteredList);
         tableViewRelatorios.setItems(obsListRelatorios);
     }
+
 
     @FXML
     public void onBtnLimparFiltroAction() {
@@ -224,7 +246,7 @@ public class RelatorioController implements Initializable {
         relatorio.setPaciente(comboBoxPaciente.getValue());
         relatorio.setPeriodo1(datePickerPeriodo1.getValue());
         relatorio.setPeriodo2(datePickerPeriodo2.getValue());
-        relatorio.setConteudo(textAreaConteudo.getText());
+        relatorio.setConteudo(textAreaConteudo.getText()); // ATUALIZADO
         return relatorio;
     }
 
@@ -235,7 +257,7 @@ public class RelatorioController implements Initializable {
             comboBoxPaciente.setValue(relatorio.getPaciente());
             datePickerPeriodo1.setValue(relatorio.getPeriodo1());
             datePickerPeriodo2.setValue(relatorio.getPeriodo2());
-            textAreaConteudo.setText(relatorio.getConteudo());
+            textAreaConteudo.setText(relatorio.getConteudo()); // ATUALIZADO
         } else {
             clearForm();
         }
@@ -247,7 +269,7 @@ public class RelatorioController implements Initializable {
         comboBoxPaciente.setValue(null);
         datePickerPeriodo1.setValue(null);
         datePickerPeriodo2.setValue(null);
-        textAreaConteudo.clear();
+        textAreaConteudo.clear(); // ATUALIZADO
     }
 
     private void showAlertDialog(Alert.AlertType type, String title, String message) {
@@ -258,9 +280,17 @@ public class RelatorioController implements Initializable {
         alert.showAndWait();
     }
 
+    private Optional<ButtonType> showConfirmationDialog(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        return alert.showAndWait();
+    }
+
+    //region Métodos de Navegação
     @FXML
     private void handlePacientesButton(ActionEvent event) {
-        System.out.println("Botão 'Pacientes' clicado! Navegando...");
         loadView("/views/PacienteView.fxml", "Gerenciar Pacientes", event);
     }
 
@@ -271,14 +301,14 @@ public class RelatorioController implements Initializable {
 
     @FXML
     private void handleConsultasButton(ActionEvent event) {
-
         loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event);
     }
 
     @FXML
     private void handleRelatoriosButton(ActionEvent event) {
-
-        loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event);
+        // Já está na tela, apenas recarrega os dados
+        updateTableView();
+        clearForm();
     }
 
     private void loadView(String fxmlPath, String title, ActionEvent event) {
@@ -293,17 +323,10 @@ public class RelatorioController implements Initializable {
             stage.setMaximized(true);
             stage.show();
         } catch (IOException e) {
-            System.err.println("Erro ao carregar a tela: " + fxmlPath + " - " + e.getMessage());
+            System.err.println("Erro ao carregar a tela: " + fxmlPath);
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível carregar a tela.", e.getMessage());
+            showAlertDialog(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível carregar a tela: " + title);
         }
     }
-
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
+    //endregion
 }
