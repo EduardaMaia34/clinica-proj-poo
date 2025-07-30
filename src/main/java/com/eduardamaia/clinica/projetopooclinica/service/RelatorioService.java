@@ -1,71 +1,61 @@
 package com.eduardamaia.clinica.projetopooclinica.service;
-import com.eduardamaia.clinica.projetopooclinica.entities.Medico;
-import com.eduardamaia.clinica.projetopooclinica.entities.Paciente;
+
 import com.eduardamaia.clinica.projetopooclinica.entities.Relatorio;
 import com.eduardamaia.clinica.projetopooclinica.repository.RelatorioRepository;
+import jakarta.persistence.EntityNotFoundException;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
+/**
+ * CORREÇÃO: Este serviço agora usa o RelatorioRepository baseado em Hibernate.
+ */
 public class RelatorioService {
-    private RelatorioRepository RelatorioRepository = new RelatorioRepository();
+
+    // Injeção de dependência (melhor prática)
+    private final RelatorioRepository relatorioRepository;
+
+    public RelatorioService() {
+        // A instância do repositório é criada aqui
+        this.relatorioRepository = new RelatorioRepository();
+    }
 
     public Relatorio criarRelatorio(Relatorio relatorio) {
         if (relatorio == null) {
-            throw new IllegalArgumentException("Relatorio não pode ser nulo");
+            throw new IllegalArgumentException("Relatório não pode ser nulo.");
         }
         if (relatorio.getMedico() == null || relatorio.getPaciente() == null) {
-            throw new IllegalArgumentException("O relatorio precisa de um medico ou paciente");
+            throw new IllegalArgumentException("O relatório precisa de um médico e um paciente.");
         }
-        if (relatorio.getPeriodo1() != null && relatorio.getPeriodo1().isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("A data de busca não pode ser futura");
-        }
-        RelatorioRepository.Salvar(relatorio);
-        return relatorio;
+        // Outras regras de negócio podem ser adicionadas aqui
+
+        return relatorioRepository.salvar(relatorio);
     }
 
-    public Relatorio buscarPorID(int Id) {
-        return RelatorioRepository.buscarPorId(Id);
+    public Relatorio buscarPorId(int id) {
+        return relatorioRepository.buscarPorId(id)
+                .orElseThrow(() -> new EntityNotFoundException("Relatório com ID " + id + " não encontrado."));
     }
 
     public List<Relatorio> listartodos() {
-        return RelatorioRepository.listartodos();
+        return relatorioRepository.listarTodos();
     }
 
-    public boolean excluirRelatorio(int Id) {
-        Relatorio relatorioexistente = RelatorioRepository.buscarPorId(Id);
-        if (relatorioexistente != null) {
-            RelatorioRepository.excluir(Id);
-            return true;
-        }
-        return false;
+    public void excluirRelatorio(int id) {
+        // Verifica se existe antes de tentar deletar
+        buscarPorId(id);
+        relatorioRepository.excluir(id);
     }
-    public Relatorio atualizarRelatorio(int Id, Relatorio relatorioAtualizado) {
-        Relatorio relatorioexistente = buscarPorID(Id);
-        if (relatorioexistente == null) {
-            throw new IllegalArgumentException("Relatório com ID " + Id + " não encontrado para atualização");
-        }
-        relatorioexistente.setConteudo(relatorioAtualizado.getConteudo());
-        relatorioexistente.setMedico(relatorioAtualizado.getMedico());
-        relatorioexistente.setPaciente(relatorioAtualizado.getPaciente());
-        return relatorioexistente;
-    }
-    public List<Relatorio> buscarPorMedico(Medico medico) {
-        Objects.requireNonNull(medico, "O objeto Médico não pode ser nulo.");
-        return RelatorioRepository.buscarPorMedico(medico);
-    }
-    public List<Relatorio> buscarPorPaciente(Paciente paciente) {
-        Objects.requireNonNull(paciente, "O objeto Paciente não pode ser nulo.");
-        return RelatorioRepository.buscarPorPaciente(paciente);
-    }
-    public List<Relatorio> buscarPorPeriodo(LocalDate periodo1, LocalDate periodo2) {
-        if (periodo1 == null || periodo2 == null) {
-            throw new IllegalArgumentException("As datas de início e fim do período devem ser fornecidas.");
-        }
-        if (periodo1.isAfter(periodo2)) {
-            throw new IllegalArgumentException("A data de início não pode ser posterior à data de fim.");
-        }
-        return RelatorioRepository.buscarPorPeriodo(periodo1, periodo2);
+
+    public Relatorio atualizarRelatorio(int id, Relatorio relatorioAtualizado) {
+        Relatorio relatorioExistente = buscarPorId(id);
+
+        // Atualiza os campos
+        relatorioExistente.setConteudo(relatorioAtualizado.getConteudo());
+        relatorioExistente.setMedico(relatorioAtualizado.getMedico());
+        relatorioExistente.setPaciente(relatorioAtualizado.getPaciente());
+        relatorioExistente.setPeriodo1(relatorioAtualizado.getPeriodo1());
+        relatorioExistente.setPeriodo2(relatorioAtualizado.getPeriodo2());
+
+        return relatorioRepository.salvar(relatorioExistente);
     }
 }
