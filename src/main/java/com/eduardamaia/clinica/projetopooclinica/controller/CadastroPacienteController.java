@@ -38,14 +38,9 @@ public class CadastroPacienteController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.pacienteService = new PacienteService();
-        // Não carregamos dados aqui, apenas preparamos o serviço.
-        // O método setPacienteParaEdicao() será chamado separadamente se for uma edição.
     }
 
-    /**
-     * Define o paciente a ser editado. Se for null, é um novo cadastro.
-     * Este método será chamado pelo PacienteController.
-     */
+
     public void setPacienteParaEdicao(Paciente paciente) {
         this.pacienteParaEdicao = paciente;
         if (pacienteParaEdicao != null) {
@@ -55,8 +50,7 @@ public class CadastroPacienteController implements Initializable {
             enderecoField.setText(pacienteParaEdicao.getEndereco());
             prontuarioField.setText(pacienteParaEdicao.getProntuario());
 
-            // Opcional: Altera o título da tela para "Editar Paciente"
-            // Supondo que o primeiro Label na VBox pai do nomeField é o título
+
             if (nomeField.getParent() instanceof VBox) {
                 VBox parentVBox = (VBox) nomeField.getParent();
                 if (!parentVBox.getChildren().isEmpty() && parentVBox.getChildren().get(0) instanceof Label) {
@@ -75,13 +69,13 @@ public class CadastroPacienteController implements Initializable {
         String endereco = enderecoField.getText().trim();
         String prontuario = prontuarioField.getText().trim();
 
-        // Validações básicas (você pode adicionar mais)
+
         if (nome.isEmpty() || cpf.isEmpty() || endereco.isEmpty() || prontuario.isEmpty()) {
             messageLabel.setText("Por favor, preencha todos os campos.");
             messageLabel.setTextFill(javafx.scene.paint.Color.RED);
             return;
         }
-        // Exemplo de validação de CPF (formato simples)
+
         if (!cpf.matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}")) {
             messageLabel.setText("Formato de CPF inválido. Use XXX.XXX.XXX-XX");
             messageLabel.setTextFill(javafx.scene.paint.Color.RED);
@@ -90,9 +84,8 @@ public class CadastroPacienteController implements Initializable {
 
         try {
             if (pacienteParaEdicao == null) {
-                // MODO DE CADASTRO: Cria um novo paciente
-                // O ID será gerado automaticamente pelo banco de dados (geralmente 0 ou null ao criar)
-                Paciente novoPaciente = new Paciente(nome, cpf, endereco, prontuario, 0); // Ajuste este construtor conforme sua classe Paciente
+
+                Paciente novoPaciente = new Paciente(nome, cpf, endereco, prontuario, 0);
                 pacienteService.cadastrarPaciente(novoPaciente);
                 messageLabel.setText("Paciente '" + novoPaciente.getNome() + "' cadastrado com sucesso!");
                 messageLabel.setTextFill(javafx.scene.paint.Color.GREEN);
@@ -104,11 +97,10 @@ public class CadastroPacienteController implements Initializable {
                 pacienteParaEdicao.setEndereco(endereco);
                 pacienteParaEdicao.setProntuario(prontuario);
 
-                pacienteService.atualizarPaciente(pacienteParaEdicao); // Este método precisa existir no PacienteService
+                pacienteService.atualizarPaciente(pacienteParaEdicao);
                 messageLabel.setText("Paciente '" + pacienteParaEdicao.getNome() + "' atualizado com sucesso!");
                 messageLabel.setTextFill(javafx.scene.paint.Color.GREEN);
-                // Após a edição, você pode querer voltar para a tela de lista de pacientes.
-                // Para isso, chame handleCancelButton(event);
+
             }
         } catch (IllegalArgumentException e) {
             messageLabel.setText(e.getMessage());
@@ -136,7 +128,7 @@ public class CadastroPacienteController implements Initializable {
             stage.show();
         } catch (IOException e) {
             System.err.println("Erro ao voltar para a tela de pacientes: " + e.getMessage());
-            e.printStackTrace(); // Apenas para depuração, substituir em produção
+            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível retornar à tela de pacientes.", e.getMessage());
         }
     }
@@ -146,8 +138,8 @@ public class CadastroPacienteController implements Initializable {
         cpfField.clear();
         enderecoField.clear();
         prontuarioField.clear();
-        pacienteParaEdicao = null; // Reseta para modo de cadastro
-        // Opcional: Redefinir o título da tela para "Cadastro de Paciente"
+        pacienteParaEdicao = null;
+
         if (nomeField.getParent() instanceof VBox) {
             VBox parentVBox = (VBox) nomeField.getParent();
             if (!parentVBox.getChildren().isEmpty() && parentVBox.getChildren().get(0) instanceof Label) {
@@ -156,9 +148,7 @@ public class CadastroPacienteController implements Initializable {
         }
     }
 
-    /**
-     * Método auxiliar para exibir alertas.
-     */
+
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

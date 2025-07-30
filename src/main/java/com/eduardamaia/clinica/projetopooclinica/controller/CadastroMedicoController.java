@@ -34,19 +34,15 @@ public class CadastroMedicoController {
     @FXML
     private TextField codigoConselhoField;
     @FXML
-    private Label messageLabel; // Rótulo para exibir mensagens de erro/sucesso
+    private Label messageLabel;
 
     private MedicoService medicoService;
-    private Medico medicoParaEdicao; // Objeto Medico que está sendo editado (null se for novo cadastro)
+    private Medico medicoParaEdicao;
 
-    // Padrões de validação
     private static final Pattern CPF_PATTERN = Pattern.compile("^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$");
-    // Permite números inteiros ou decimais com '.' ou ',' como separador, e 1 ou 2 casas decimais (opcional)
     private static final Pattern VALOR_CONSULTA_PATTERN = Pattern.compile("^\\d+(\\.\\d{1,2}|,\\d{1,2})?$");
 
-    /**
-     * Construtor do controlador. Inicializa o serviço de médico.
-     */
+
     public CadastroMedicoController() {
         this.medicoService = new MedicoService();
     }
@@ -103,7 +99,6 @@ public class CadastroMedicoController {
                 medico.setCodigoConselho(codigoConselho);
             }
 
-            // Chama o serviço para salvar (o serviço vai decidir se é persist ou merge)
             medicoService.salvarMedico(medico);
 
             messageLabel.setText("Médico salvo com sucesso!");
@@ -111,7 +106,7 @@ public class CadastroMedicoController {
 
             loadView("/views/MedicoView.fxml", "Gerenciar Médicos", event);
 
-            // Se for um novo cadastro, limpa os campos para um novo input
+
             if (medicoParaEdicao == null) {
                 clearFields();
             }
@@ -136,19 +131,15 @@ public class CadastroMedicoController {
         }
     }
 
-    /**
-     * Manipula o evento do botão "Cancelar".
-     * Retorna para a tela de listagem de médicos (MedicoView).
-     * @param event O evento de ação do botão.
-     */
+
     @FXML
     private void handleCancel(ActionEvent event) {
         try {
-            // Carrega a MedicoView (tela de listagem de médicos)
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MedicoView.fxml"));
             Parent root = loader.load();
 
-            // Pega o Stage atual da janela (o botão Cancelar) e define a nova cena
+
             Stage stage = (Stage) ((javafx.scene.control.Button) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Clínica - Gerenciar Médicos");
@@ -161,11 +152,6 @@ public class CadastroMedicoController {
         }
     }
 
-    /**
-     * Realiza a validação dos campos de entrada do formulário.
-     * Exibe mensagens de erro no messageLabel se a validação falhar.
-     * @return true se todos os campos são válidos, false caso contrário.
-     */
     private boolean validateFields() {
         String nome = nomeField.getText().trim();
         String cpf = cpfField.getText().trim();
@@ -234,13 +220,11 @@ public class CadastroMedicoController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
-
-            // Get the current stage from the event source
             Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Clínica - " + title);
-            stage.setMaximized(true); // Keep maximized if desired
+            stage.setMaximized(true);
             stage.show();
 
         } catch (IOException e) {
