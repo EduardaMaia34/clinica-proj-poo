@@ -67,8 +67,8 @@ public class ConsultasController {
         colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colunaPacienteId.setCellValueFactory(new PropertyValueFactory<>("pacienteid"));
         colunaMedicoId.setCellValueFactory(new PropertyValueFactory<>("medicoid"));
-        colunaData.setCellValueFactory(new PropertyValueFactory<>("Data"));
-        colunaHora.setCellValueFactory(new PropertyValueFactory<>("Hora"));
+        colunaData.setCellValueFactory(new PropertyValueFactory<>("data"));
+        colunaHora.setCellValueFactory(new PropertyValueFactory<>("hora"));
 
         tabelaConsultas.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) ->
@@ -209,7 +209,7 @@ public class ConsultasController {
             // Carrega o arquivo FXML do diálogo
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/views/AgendarConsultaView.fxml"));
-            BorderPane dialogPane = loader.load();
+            Parent dialogPane = loader.load();
 
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Agendar Nova Consulta");
@@ -218,6 +218,7 @@ public class ConsultasController {
             dialogStage.setScene(scene);
 
             dialogStage.showAndWait();
+            atualizarTabela(); // linha para atualizar a lista de consultas
 
         } catch (IOException e) {
             e.printStackTrace();

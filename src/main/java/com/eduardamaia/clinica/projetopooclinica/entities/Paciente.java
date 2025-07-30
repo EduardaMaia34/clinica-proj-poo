@@ -18,6 +18,9 @@ public class Paciente extends Pessoa{
 
     public Paciente(int i, String nome) {
     }
+    public Paciente(String nome){
+
+    }
 
     public String getProntuario() {
         return prontuario;
