@@ -292,7 +292,6 @@ public class MedicoController implements Initializable, MedicoDataChangeListener
 
     @FXML
     private void handleRelatoriosButton(ActionEvent event) {
-
         loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event);
     }
 

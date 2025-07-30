@@ -9,11 +9,17 @@ import com.eduardamaia.clinica.projetopooclinica.service.RelatorioService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
@@ -249,6 +255,55 @@ public class RelatorioController implements Initializable {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void handlePacientesButton(ActionEvent event) {
+        System.out.println("Botão 'Pacientes' clicado! Navegando...");
+        loadView("/views/PacienteView.fxml", "Gerenciar Pacientes", event);
+    }
+
+    @FXML
+    private void handleMedicosButton(ActionEvent event) {
+        loadView("/views/MedicoView.fxml", "Gerenciar Medico", event);
+    }
+
+    @FXML
+    private void handleConsultasButton(ActionEvent event) {
+
+        loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event);
+    }
+
+    @FXML
+    private void handleRelatoriosButton(ActionEvent event) {
+
+        loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event);
+    }
+
+    private void loadView(String fxmlPath, String title, ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Clínica - " + title);
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar a tela: " + fxmlPath + " - " + e.getMessage());
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível carregar a tela.", e.getMessage());
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
         alert.showAndWait();
     }
 }
