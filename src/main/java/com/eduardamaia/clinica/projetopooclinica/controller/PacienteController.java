@@ -281,7 +281,7 @@ public class PacienteController implements Initializable {
 
     @FXML
     private void handleConsultasButton(ActionEvent event) {
-        loadView("/views/ConsultasView.fxml", "Gerenciar Pacientes", event);
+        loadView("/views/ConsultaView.fxml", "Gerenciar Pacientes", event);
     }
 
     @FXML

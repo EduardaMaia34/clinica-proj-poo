@@ -13,7 +13,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-public class ConsultasController {
+public class ConsultaController {
 
     // --- FXML Fields que REALMENTE existem no FXML ---
     @FXML
@@ -144,7 +143,7 @@ public class ConsultasController {
     @FXML
     private void handleConsultasButton(ActionEvent event) {
         // Já estamos aqui, mas podemos recarregar se necessário
-        loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event);
+        loadView("/views/ConsultaView.fxml", "Gerenciar Consultas", event);
     }
 
     @FXML

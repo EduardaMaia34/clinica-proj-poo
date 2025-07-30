@@ -169,7 +169,7 @@ public class RelatorioController implements Initializable {
 
     @FXML
     private void handleConsultasButton(ActionEvent event) {
-        loadView("/views/ConsultasView.fxml", "Gerenciar Consultas", event);
+        loadView("/views/ConsultaView.fxml", "Gerenciar Consultas", event);
     }
 
     @FXML

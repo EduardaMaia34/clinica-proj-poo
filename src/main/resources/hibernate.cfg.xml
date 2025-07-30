@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <hibernate-configuration>
     <session-factory>
-
         <!-- Conexão -->
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/clinicabd</property>
@@ -25,6 +23,7 @@
         <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Paciente"/>
         <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Medico"/>
         <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Usuario"/>
+        <!-- CORREÇÃO: Mapeando a classe com o nome correto "Consulta" (singular) -->
         <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Consulta"/>
         <mapping class="com.eduardamaia.clinica.projetopooclinica.entities.Relatorio"/>
 

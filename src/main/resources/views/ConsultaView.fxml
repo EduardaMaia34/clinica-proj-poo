@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 
 <!-- O controller continua o mesmo, mas seu conteúdo interno será corrigido -->
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.eduardamaia.clinica.projetopooclinica.controller.ConsultasController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.eduardamaia.clinica.projetopooclinica.controller.ConsultaController">
 
     <top>
         <VBox>
