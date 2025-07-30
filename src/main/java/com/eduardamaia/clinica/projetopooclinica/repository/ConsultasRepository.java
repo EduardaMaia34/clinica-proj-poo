@@ -14,7 +14,8 @@ public class ConsultasRepository {
     // 🔒 Instância Singleton
     private static ConsultasRepository instancia;
 
-    public ConsultasRepository() {
+
+    private ConsultasRepository() {
 
     }
 

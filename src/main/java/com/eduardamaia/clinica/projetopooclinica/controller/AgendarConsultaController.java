@@ -43,7 +43,7 @@ public class AgendarConsultaController implements Initializable {
 
     private final PacienteRepository pacienteRepository = new PacienteRepository();
     private final MedicoRepository medicoRepository = new MedicoRepository();
-    private final ConsultasRepository consultasRepository = new ConsultasRepository();
+    private final ConsultasRepository consultasRepository = ConsultasRepository.getInstance();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
