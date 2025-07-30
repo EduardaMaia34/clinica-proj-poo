@@ -74,7 +74,7 @@ public class AgendarConsultaController implements Initializable {
             Consultas novaConsulta = new Consultas();
             novaConsulta.setPaciente(pacienteSelecionado.getId());
             novaConsulta.setMedico(medicoSelecionado.getId());
-            novaConsulta.setData(data.toString());
+            novaConsulta.setData(LocalDate.parse(data.toString()));
             novaConsulta.setHora(hora.toString());
 
             consultasRepository.salvar(novaConsulta);

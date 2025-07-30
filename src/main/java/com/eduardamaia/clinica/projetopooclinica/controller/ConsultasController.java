@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import java.util.List;
@@ -110,7 +111,7 @@ public class ConsultasController {
             Consultas consulta = new Consultas();
             consulta.setPaciente(pacienteId);
             consulta.setMedico(medicoId);
-            consulta.setData(data);
+            consulta.setData(LocalDate.parse(data));
             consulta.setHora(hora);
 
             if (campoId.getText() == null || campoId.getText().isEmpty()) {
@@ -140,7 +141,7 @@ public class ConsultasController {
             campoId.setText(String.valueOf(consultaSelecionada.getId()));
             campoPacienteId.setText(String.valueOf(consultaSelecionada.getPaciente()));
             campoMedicoId.setText(String.valueOf(consultaSelecionada.getMedico()));
-            campoData.setText(consultaSelecionada.getData());
+            campoData.setText(String.valueOf(consultaSelecionada.getData()));
             campoHora.setText(consultaSelecionada.getHora());
         } else {
             // Se nada estiver selecionado, avisa o usuário
@@ -197,7 +198,7 @@ public class ConsultasController {
             campoId.setText(String.valueOf(consulta.getId()));
             campoPacienteId.setText(String.valueOf(consulta.getPaciente()));
             campoMedicoId.setText(String.valueOf(consulta.getMedico()));
-            campoData.setText(consulta.getData());
+            campoData.setText(String.valueOf(consulta.getData()));
             campoHora.setText(consulta.getHora());
         }
     }

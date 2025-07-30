@@ -3,6 +3,8 @@ package com.eduardamaia.clinica.projetopooclinica.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Relatorio {
@@ -11,15 +13,17 @@ public class Relatorio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "medico_id", nullable = false)
     private Medico medico;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
-    private Consultas consulta;
+    @OneToMany(mappedBy = "relatorio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Consultas> consulta = new HashSet<>();
+
     private LocalDate periodo1;
     private LocalDate periodo2;
     private String conteudo;
@@ -29,7 +33,6 @@ public class Relatorio {
     public Relatorio(Medico medico, Paciente paciente, Consultas consulta, String conteudo, LocalDate periodo1, LocalDate periodo2) {
         setMedico(medico);
         setPaciente(paciente);
-        setConsulta(consulta);
         setConteudo(conteudo);
         setPeriodo1(periodo1);
         setPeriodo2(periodo2);
@@ -51,11 +54,33 @@ public class Relatorio {
             this.conteudo = conteudo;
         }
     }
-    public void setConsulta(Consultas consulta) {
+    public Set<Consultas> getConsultas() {
+        return consulta;
+    }
+    public void addConsulta(Consultas consulta) {
         if (consulta == null) {
-            throw new IllegalArgumentException("A consulta do relatório não pode ser nula.");
+            throw new IllegalArgumentException("A consulta a ser adicionada não pode ser nula.");
         }
-        this.consulta = consulta;
+        // Evita adicionar a mesma consulta múltiplas vezes se já estiver na coleção
+        if (!this.consulta.contains(consulta)) {
+            this.consulta.add(consulta);
+            // Garante a consistência bidirecional: a consulta também deve referenciar este relatório
+            if (consulta.getRelatorio() != this) {
+                consulta.setRelatorio(this);
+            }
+        }
+    }
+    public void removeConsulta(Consultas consulta) {
+        if (consulta == null) {
+            throw new IllegalArgumentException("A consulta a ser removida não pode ser nula.");
+        }
+        if (this.consulta.contains(consulta)) {
+            this.consulta.remove(consulta);
+            // Remove a associação no lado da Consulta se ela ainda apontar para este relatório
+            if (consulta.getRelatorio() == this) {
+                consulta.setRelatorio(null);
+            }
+        }
     }
     public void setPeriodo1(LocalDate periodo1){
         if (periodo1 == null){
@@ -88,9 +113,7 @@ public class Relatorio {
     public String getConteudo(){
         return conteudo;
     }
-    public Consultas getConsulta() {
-        return consulta;
-    }
+
     public LocalDate getPeriodo1(){
         return periodo1;
     }
