@@ -13,20 +13,18 @@ public class Relatorio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // CORREÇÃO: Mude para EAGER para evitar LazyInitializationException na tabela
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "medico_id", nullable = false)
     private Medico medico;
 
-    // CORREÇÃO: Mude para EAGER para evitar LazyInitializationException na tabela
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
     @OneToMany(mappedBy = "relatorio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Consulta> consultas = new HashSet<>(); // Renomeado para plural
+    private Set<Consulta> consultas = new HashSet<>();
 
-    @Column(name = "periodo_inicial") // Nomes de coluna mais explícitos
+    @Column(name = "periodo_inicial")
     private LocalDate periodo1;
 
     @Column(name = "periodo_final")
@@ -36,6 +34,29 @@ public class Relatorio {
     private String conteudo;
 
     public Relatorio() {}
+
+    // --- MÉTODOS QUE PRECISAM SER ADICIONADOS PARA RESOLVER OS ERROS ---
+
+    // Adiciona uma consulta ao conjunto e mantém a consistência da relação
+    public void addConsulta(Consulta consulta) {
+        if (consulta != null && !this.consultas.contains(consulta)) {
+            this.consultas.add(consulta);
+            // Garante que a consulta também está ligada a este relatório
+            consulta.setRelatorio(this);
+        }
+    }
+
+    // Remove uma consulta do conjunto e mantém a consistência da relação
+    public void removeConsulta(Consulta consulta) {
+        if (consulta != null && this.consultas.contains(consulta)) {
+            this.consultas.remove(consulta);
+            // Remove a ligação da consulta com este relatório
+            consulta.setRelatorio(null);
+        }
+    }
+
+    // --- Getters e Setters (conforme o seu código) ---
+
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public Medico getMedico() { return medico; }
