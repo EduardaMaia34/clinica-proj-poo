@@ -52,7 +52,7 @@ public class RelatorioController implements Initializable {
     @FXML
     private TableColumn<Consulta, String> colHora;
 
-    private final ConsultaRepository consultaRepository = new ConsultaRepository();
+    private final ConsultaRepository consultaRepository = ConsultaRepository.getInstance();
 
     private final ConsultaService consultaService = new ConsultaService(consultaRepository);
     private final MedicoService medicoService = new MedicoService();

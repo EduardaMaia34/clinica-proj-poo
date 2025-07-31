@@ -42,7 +42,7 @@ public class ConsultaController {
     @FXML
     private Button botaoDeletar;
 
-    private final ConsultaRepository consultaRepository = new ConsultaRepository();
+    private final ConsultaRepository consultaRepository = ConsultaRepository.getInstance();
     private final ConsultaService consultaService = new ConsultaService(consultaRepository);
     private ObservableList<Consulta> observableListConsultas;
 

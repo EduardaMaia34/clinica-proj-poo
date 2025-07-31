@@ -38,7 +38,7 @@ public class AgendarConsultaController implements Initializable {
 
     private final PacienteRepository pacienteRepository = new PacienteRepository();
     private final MedicoRepository medicoRepository = new MedicoRepository();
-    private final ConsultaRepository consultaRepository = new ConsultaRepository();
+    private final ConsultaRepository consultaRepository = ConsultaRepository.getInstance();
     private final ConsultaService consultaService = new ConsultaService(consultaRepository);
 
     private Consulta consultaParaEditar;
