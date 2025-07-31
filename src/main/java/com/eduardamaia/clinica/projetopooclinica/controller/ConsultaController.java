@@ -130,12 +130,45 @@ public class ConsultaController {
         }
     }
 
-
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
         Alert alert = new Alert(tipo);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
         alert.setContentText(mensagem);
         alert.showAndWait();
+    }
+
+    // Métodos para os botões do menu de navegação
+    @FXML
+    private void handlePacientesButton() {
+        abrirNovaTela("/views/PacienteView.fxml", "Pacientes");
+    }
+
+    @FXML
+    private void handleMedicosButton() {
+        abrirNovaTela("/views/MedicoView.fxml", "Médicos");
+    }
+
+    @FXML
+    private void handleConsultasButton() {
+        // Já estamos na tela de consultas, não faz nada
+    }
+
+    @FXML
+    private void handleRelatoriosButton() {
+        abrirNovaTela("/views/RelatorioView.fxml", "Relatórios");
+    }
+
+    private void abrirNovaTela(String fxmlPath, String titulo) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+            Stage stage = (Stage) tabelaConsultas.getScene().getWindow();
+            stage.setTitle(titulo);
+            stage.getScene().setRoot(root);
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível carregar a tela: " + titulo);
+            e.printStackTrace();
+        }
     }
 }

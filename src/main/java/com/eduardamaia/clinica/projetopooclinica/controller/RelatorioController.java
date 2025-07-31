@@ -13,11 +13,16 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
@@ -158,5 +163,39 @@ public class RelatorioController implements Initializable {
             @Override
             public Paciente fromString(String string) { return null; }
         });
+    }
+
+    // Métodos para os botões do menu de navegação
+    @FXML
+    private void handlePacientesButton() {
+        abrirNovaTela("/views/PacienteView.fxml", "Pacientes");
+    }
+
+    @FXML
+    private void handleMedicosButton() {
+        abrirNovaTela("/views/MedicoView.fxml", "Médicos");
+    }
+
+    @FXML
+    private void handleConsultasButton() {
+        abrirNovaTela("/views/ConsultaView.fxml", "Consultas");
+    }
+
+    @FXML
+    private void handleRelatoriosButton() {
+        // Já estamos na tela de relatórios, não faz nada
+    }
+
+    private void abrirNovaTela(String fxmlPath, String titulo) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+            Stage stage = (Stage) tableViewConsultas.getScene().getWindow();
+            stage.setTitle(titulo);
+            stage.getScene().setRoot(root);
+        } catch (IOException e) {
+            showAlertDialog(Alert.AlertType.ERROR, "Erro de Navegação", "Não foi possível carregar a tela: " + titulo);
+            e.printStackTrace();
+        }
     }
 }
