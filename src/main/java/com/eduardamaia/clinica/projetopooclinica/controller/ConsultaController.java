@@ -6,7 +6,6 @@ import com.eduardamaia.clinica.projetopooclinica.service.ConsultaService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -65,39 +64,27 @@ public class ConsultaController {
         tabelaConsultas.setItems(observableListConsultas);
     }
 
-    // --- AÇÕES DOS BOTÕES ---
-
     @FXML
     private void handleAgendarConsulta() {
-        abrirFormularioConsulta(null); // Passa null para indicar que é uma nova consulta
+        abrirFormularioConsulta(null);
     }
 
-    /**
-     * CORREÇÃO PRINCIPAL: Este método agora abre o formulário e passa a consulta selecionada.
-     */
     @FXML
     private void handleEditarConsulta() {
         Consulta consultaSelecionada = tabelaConsultas.getSelectionModel().getSelectedItem();
         if (consultaSelecionada == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Nenhuma Seleção", "Por favor, selecione uma consulta na tabela para editar.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Nenhuma Seleção", "Por favor, selecione uma consulta para editar.");
             return;
         }
-        abrirFormularioConsulta(consultaSelecionada); // Passa o objeto selecionado
+        abrirFormularioConsulta(consultaSelecionada);
     }
 
-    /**
-     * Método centralizado para abrir o formulário de consulta, seja para criar ou editar.
-     * @param consulta A consulta a ser editada, ou null se for para criar uma nova.
-     */
     private void abrirFormularioConsulta(Consulta consulta) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AgendarConsultaView.fxml"));
             Parent root = loader.load();
 
-            // Pega o controller da tela de agendamento
             AgendarConsultaController controller = loader.getController();
-
-            // Se uma consulta foi passada, configura o formulário para edição
             if (consulta != null) {
                 controller.setConsultaParaEditar(consulta);
             }
@@ -107,10 +94,8 @@ public class ConsultaController {
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(botaoAgendar.getScene().getWindow());
             dialogStage.setScene(new Scene(root));
-
             dialogStage.showAndWait();
 
-            // Atualiza a tabela principal após fechar o formulário
             atualizarTabela();
 
         } catch (IOException e) {
@@ -145,12 +130,12 @@ public class ConsultaController {
         }
     }
 
-    // --- MÉTODOS DE NAVEGAÇÃO E ALERTA ---
-    // (sem alterações)
-    private void loadView(String fxmlPath, String title, ActionEvent event) { /* ... */ }
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) { /* ... */ }
-    @FXML private void handlePacientesButton(ActionEvent event) { loadView("/views/PacienteView.fxml", "Gerenciar Pacientes", event); }
-    @FXML private void handleMedicosButton(ActionEvent event) { loadView("/views/MedicoView.fxml", "Gerenciar Médicos", event); }
-    @FXML private void handleConsultasButton(ActionEvent event) { loadView("/views/ConsultaView.fxml", "Gerenciar Consultas", event); }
-    @FXML private void handleRelatoriosButton(ActionEvent event) { loadView("/views/RelatorioView.fxml", "Visualizar Relatórios", event); }
+
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
+    }
 }

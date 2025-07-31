@@ -5,64 +5,39 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<!-- O controller continua o mesmo, mas seu conteúdo interno será corrigido -->
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.eduardamaia.clinica.projetopooclinica.controller.ConsultaController">
-
+<!--
+  Este FXML agora é um painel de conteúdo, controlado pelo Dashboard.
+  O fx:controller continua o mesmo, mas o código dele foi limpo.
+-->
+<BorderPane prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.eduardamaia.clinica.projetopooclinica.controller.ConsultaController">
     <top>
-        <VBox>
-            <!-- Menu Superior (sem alterações) -->
-            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #e3eef4; -fx-padding: 0 20 0 20;">
-                <ImageView fitHeight="100" fitWidth="100">
-                    <image>
-                        <Image url="@logo.png" />
-                    </image>
-                </ImageView>
-                <Region HBox.hgrow="ALWAYS" />
-                <HBox alignment="CENTER" spacing="30">
-                    <Button onAction="#handlePacientesButton" styleClass="menu-button" text="Pacientes" />
-                    <Button onAction="#handleMedicosButton" styleClass="menu-button" text="Médicos" />
-                    <Button onAction="#handleConsultasButton" styleClass="menu-button" text="Consultas" />
-                    <Button onAction="#handleRelatoriosButton" styleClass="menu-button" text="Relatórios" />
+        <!-- CORREÇÃO: O menu de navegação superior foi removido. -->
+        <VBox spacing="10.0" style="-fx-padding: 20;">
+            <children>
+                <Label text="Consultas Agendadas">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <!-- Os botões de ação da tela (Agendar, Editar, Deletar) foram mantidos -->
+                        <Button fx:id="botaoAgendar" onAction="#handleAgendarConsulta" prefWidth="150.0" text="Agendar Nova Consulta" />
+                        <Button fx:id="botaoEditar" onAction="#handleEditarConsulta" prefWidth="80.0" text="Editar" />
+                        <Button fx:id="botaoDeletar" onAction="#handleDeletarConsulta" prefWidth="80.0" text="Deletar" />
+                    </children>
                 </HBox>
-            </HBox>
-
-            <!-- Cabeçalho da Seção de Consultas -->
-            <VBox spacing="10.0">
-                <padding>
-                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                </padding>
-                <children>
-                    <Label text="Consultas Agendadas">
-                        <font>
-                            <Font name="System Bold" size="18.0" />
-                        </font>
-                    </Label>
-                    <HBox alignment="CENTER_LEFT" spacing="10.0">
-                        <children>
-                            <!-- Os botões de ação foram mantidos -->
-                            <Button fx:id="botaoAgendar" onAction="#handleAgendarConsulta" prefWidth="150.0" text="Agendar Nova Consulta" />
-                            <Button fx:id="botaoEditar" onAction="#handleEditarConsulta" prefWidth="80.0" text="Editar" />
-                            <Button fx:id="botaoDeletar" onAction="#handleDeletarConsulta" prefWidth="80.0" text="Deletar" />
-                        </children>
-                    </HBox>
-                </children>
-            </VBox>
+            </children>
         </VBox>
     </top>
-
     <center>
-        <!-- Tabela de Consultas -->
         <TableView fx:id="tabelaConsultas" BorderPane.alignment="CENTER">
             <columns>
-                <!-- CORREÇÃO: IDs das colunas ajustados para serem mais descritivos -->
                 <TableColumn fx:id="colunaId" prefWidth="70.0" text="ID" />
                 <TableColumn fx:id="colunaPaciente" prefWidth="250.0" text="Paciente" />
                 <TableColumn fx:id="colunaMedico" prefWidth="250.0" text="Médico" />
@@ -70,7 +45,7 @@
                 <TableColumn fx:id="colunaHora" prefWidth="150.0" text="Hora" />
             </columns>
             <BorderPane.margin>
-                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
             </BorderPane.margin>
         </TableView>
     </center>
