@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -40,21 +41,51 @@ public class AgendarConsultaController implements Initializable {
     private final ConsultaRepository consultaRepository = new ConsultaRepository();
     private final ConsultaService consultaService = new ConsultaService(consultaRepository);
 
-    // CORREÇÃO: Campo para guardar a consulta que está sendo editada
     private Consulta consultaParaEditar;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Carrega os dados e DEPOIS configura como eles são exibidos
         carregarPacientes();
         carregarMedicos();
+        configurarDisplayComboBoxes();
     }
 
     /**
-     * CORREÇÃO: Novo método para receber a consulta do controller principal e preencher o formulário.
+     * CORREÇÃO: Novo método para configurar a exibição dos ComboBoxes.
+     * Isso garante que os nomes sejam exibidos corretamente.
      */
+    private void configurarDisplayComboBoxes() {
+        // Configura como exibir o nome do Paciente
+        comboPaciente.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Paciente paciente) {
+                return paciente == null ? "" : "Paciente: " + paciente.getNome() + " (Prontuário: " + paciente.getProntuario() + ")";
+            }
+
+            @Override
+            public Paciente fromString(String string) {
+                return null; // Não precisamos converter de String para Paciente
+            }
+        });
+
+        // Configura como exibir o nome do Médico
+        comboMedico.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Medico medico) {
+                return medico == null ? "" : "Médico: " + medico.getNome() + " (CRM: " + medico.getCodigoConselho() + ")";
+            }
+
+            @Override
+            public Medico fromString(String string) {
+                return null; // Não precisamos converter de String para Médico
+            }
+        });
+    }
+
+
     public void setConsultaParaEditar(Consulta consulta) {
         this.consultaParaEditar = consulta;
-
         // Preenche os campos do formulário com os dados da consulta existente
         comboPaciente.setValue(consulta.getPaciente());
         comboMedico.setValue(consulta.getMedico());
@@ -75,14 +106,11 @@ public class AgendarConsultaController implements Initializable {
             String horaTexto = campoHora.getText();
             LocalTime.parse(horaTexto, DateTimeFormatter.ofPattern("HH:mm"));
 
-            // CORREÇÃO: Lógica para decidir se deve criar ou atualizar
             if (consultaParaEditar == null) {
-                // Modo CRIAÇÃO: cria uma nova consulta
                 Consulta novaConsulta = new Consulta(pacienteSelecionado, medicoSelecionado, data, horaTexto);
                 consultaService.criarConsulta(novaConsulta);
                 exibirAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Consulta agendada com sucesso!");
             } else {
-                // Modo EDIÇÃO: atualiza a consulta existente
                 consultaParaEditar.setPaciente(pacienteSelecionado);
                 consultaParaEditar.setMedico(medicoSelecionado);
                 consultaParaEditar.setData(data);
@@ -104,12 +132,34 @@ public class AgendarConsultaController implements Initializable {
     }
 
     // --- Métodos de ajuda e carregamento (sem alterações) ---
-    private void carregarPacientes() { /* ... */ }
-    private void carregarMedicos() { /* ... */ }
+    private void carregarPacientes() {
+        ObservableList<Paciente> listaPacientes = FXCollections.observableArrayList(pacienteRepository.listarTodos());
+        comboPaciente.setItems(listaPacientes);
+    }
+    private void carregarMedicos() {
+        ObservableList<Medico> listaMedicos = FXCollections.observableArrayList(medicoRepository.listarTodos());
+        comboMedico.setItems(listaMedicos);
+    }
     @FXML private void handleCancelar() { fecharJanela(); }
-    private boolean validarCampos() { /* ... */ return true; }
-    private void exibirAlerta(Alert.AlertType tipo, String titulo, String conteudo) { /* ... */ }
-    private void fecharJanela() { /* ... */ }
-    private void configurarDisplayComboBoxPaciente() { /* ... */ }
-    private void configurarDisplayComboBoxMedico() { /* ... */ }
+    private boolean validarCampos() {
+        if (comboPaciente.getSelectionModel().isEmpty() ||
+                comboMedico.getSelectionModel().isEmpty() ||
+                datePickerData.getValue() == null ||
+                campoHora.getText().isBlank()) {
+            exibirAlerta(Alert.AlertType.WARNING, "Campos Incompletos", "Por favor, preencha todos os campos.");
+            return false;
+        }
+        return true;
+    }
+    private void exibirAlerta(Alert.AlertType tipo, String titulo, String conteudo) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(conteudo);
+        alert.showAndWait();
+    }
+    private void fecharJanela() {
+        Stage stage = (Stage) botaoSalvar.getScene().getWindow();
+        stage.close();
+    }
 }
