@@ -2,6 +2,7 @@ package com.eduardamaia.clinica.projetopooclinica.controller;
 
 import com.eduardamaia.clinica.projetopooclinica.entities.Usuario;
 import com.eduardamaia.clinica.projetopooclinica.service.LoginService;
+import com.eduardamaia.clinica.projetopooclinica.exception.LoginFailedException;
 import com.eduardamaia.clinica.projetopooclinica.util.SessionManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -62,52 +63,52 @@ public class LoginController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
+        // 1. Validação dos campos vazios (continua a mesma)
         if (username.isEmpty() || password.isEmpty()) {
             if (errorMessageLabel != null) {
                 errorMessageLabel.setText("Por favor, preencha todos os campos.");
+                errorMessageLabel.setTextFill(javafx.scene.paint.Color.RED);
             }
             return;
         }
 
-        Usuario authenticatedUser = loginService.authenticateUser(username, password);
+        try {
+            // 2. Tentativa de autenticação. O serviço agora lança uma exceção em caso de falha.
+            Usuario authenticatedUser = loginService.authenticateUser(username, password);
 
-        if (authenticatedUser != null) {
             System.out.println("Login bem-sucedido!");
-
             SessionManager.setLoggedInUser(authenticatedUser);
 
-
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
-                Parent root = loader.load();
-
-
-                DashboardController dashboardController = loader.getController();
-                if (dashboardController != null) {
-                    dashboardController.setLoggedInUser(authenticatedUser);
-                }
-
-                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.setTitle("Clínica - Dashboard");
-                stage.setMaximized(true);
-                stage.show();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                if (errorMessageLabel != null) {
-                    errorMessageLabel.setText("Erro ao carregar a tela do Dashboard.");
-                    errorMessageLabel.setTextFill(javafx.scene.paint.Color.RED);
-                }
+            // 3. Carregamento do Dashboard em caso de sucesso
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
+            Parent root = loader.load();
+            DashboardController dashboardController = loader.getController();
+            if (dashboardController != null) {
+                dashboardController.setLoggedInUser(authenticatedUser);
             }
-        } else {
+
+            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Clínica - Dashboard");
+            stage.setMaximized(true);
+            stage.show();
+
+        } catch (LoginFailedException e) {
+            // 4. Captura da exceção personalizada em caso de falha na autenticação
             if (errorMessageLabel != null) {
-                errorMessageLabel.setText("Usuário ou senha inválidos.");
+                errorMessageLabel.setText(e.getMessage());
                 errorMessageLabel.setTextFill(javafx.scene.paint.Color.RED);
             }
             System.out.println("Falha no login para: " + username);
+            System.out.println("Erro: " + e.getMessage());
+        } catch (IOException e) {
+            // 5. Tratamento de erro ao carregar a tela, caso ocorra
+            e.printStackTrace();
+            if (errorMessageLabel != null) {
+                errorMessageLabel.setText("Erro ao carregar a tela do Dashboard.");
+                errorMessageLabel.setTextFill(javafx.scene.paint.Color.RED);
+            }
         }
     }
-
 }

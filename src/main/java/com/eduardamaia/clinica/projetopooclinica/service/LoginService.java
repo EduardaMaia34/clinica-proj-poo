@@ -5,31 +5,32 @@ import com.eduardamaia.clinica.projetopooclinica.entities.Usuario; // Ensure thi
 import com.eduardamaia.clinica.projetopooclinica.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import com.eduardamaia.clinica.projetopooclinica.exception.LoginFailedException;
+import org.hibernate.HibernateException;
 
 import java.util.Optional;
 
 public class LoginService {
 
-    // Constructor (optional, but good for future dependency injection)
+
     public LoginService() {
-        // No direct repository instantiation here if it depends on a Session that's created per method call.
+
     }
 
 
-    public Usuario authenticateUser(String username, String password) {
+    public Usuario authenticateUser(String username, String password) throws LoginFailedException {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             UsuarioRepository usuarioRepository = new UsuarioRepository(session);
             Optional<Usuario> userOptional = usuarioRepository.findByUsername(username);
 
             if (userOptional.isPresent() && password.equals(userOptional.get().getSenha())) {
-                return userOptional.get(); // Return the authenticated Usuario object
+                return userOptional.get();
             } else {
-                return null; // Authentication failed
+                throw new LoginFailedException("Usuário ou senha inválidos.");
             }
-        } catch (Exception e) {
-            System.err.println("Erro no serviço de autenticação: " + e.getMessage());
-            e.printStackTrace();
-            return null; // Return null on database error or unexpected exception
+        } catch (HibernateException e) {
+            System.err.println("Erro de banco de dados durante a autenticação: " + e.getMessage());
+            throw new LoginFailedException("Erro ao conectar ao banco de dados.", e);
         }
     }
 
