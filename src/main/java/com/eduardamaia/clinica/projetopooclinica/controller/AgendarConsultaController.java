@@ -51,12 +51,9 @@ public class AgendarConsultaController implements Initializable {
         configurarDisplayComboBoxes();
     }
 
-    /**
-     * CORREÇÃO: Novo método para configurar a exibição dos ComboBoxes.
-     * Isso garante que os nomes sejam exibidos corretamente.
-     */
+   //garante que os nomes sejam exibidos corretamente
     private void configurarDisplayComboBoxes() {
-        // Configura como exibir o nome do Paciente
+        //configura como exibir o nome do Paciente
         comboPaciente.setConverter(new StringConverter<>() {
             @Override
             public String toString(Paciente paciente) {
@@ -65,11 +62,11 @@ public class AgendarConsultaController implements Initializable {
 
             @Override
             public Paciente fromString(String string) {
-                return null; // Não precisamos converter de String para Paciente
+                return null;
             }
         });
 
-        // Configura como exibir o nome do Médico
+        //configura como exibir o nome do Médico
         comboMedico.setConverter(new StringConverter<>() {
             @Override
             public String toString(Medico medico) {
@@ -131,7 +128,6 @@ public class AgendarConsultaController implements Initializable {
         }
     }
 
-    // --- Métodos de ajuda e carregamento (sem alterações) ---
     private void carregarPacientes() {
         ObservableList<Paciente> listaPacientes = FXCollections.observableArrayList(pacienteRepository.listarTodos());
         comboPaciente.setItems(listaPacientes);

@@ -19,7 +19,6 @@ public class ConsultaService {
 
     public Consulta criarConsulta(Consulta consulta) {
 
-        // ⏰ Verifica se o médico já tem uma consulta no mesmo horário
         List<Consulta> consultasExistentes = consultasRepository.listarTodas();
 
         boolean conflito = consultasExistentes.stream()
@@ -50,11 +49,9 @@ public class ConsultaService {
     }
 
     public Consulta atualizarConsulta(int id, Consulta dadosParaAtualizar) {
-        // Busca a consulta existente para garantir que ela está no contexto de persistência.
         Consulta consultaExistente = buscarConsultaPorId(id);
 
         // Atualiza os campos da entidade existente com os novos dados.
-        // As validações nos setters da entidade Consultas serão acionadas aqui.
         consultaExistente.setPaciente(dadosParaAtualizar.getPaciente());
         consultaExistente.setMedico(dadosParaAtualizar.getMedico());
         consultaExistente.setData(dadosParaAtualizar.getData());

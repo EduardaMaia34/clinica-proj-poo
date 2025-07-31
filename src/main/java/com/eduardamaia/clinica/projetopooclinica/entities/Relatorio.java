@@ -35,27 +35,23 @@ public class Relatorio {
 
     public Relatorio() {}
 
-    // --- MÉTODOS QUE PRECISAM SER ADICIONADOS PARA RESOLVER OS ERROS ---
 
-    // Adiciona uma consulta ao conjunto e mantém a consistência da relação
     public void addConsulta(Consulta consulta) {
         if (consulta != null && !this.consultas.contains(consulta)) {
             this.consultas.add(consulta);
-            // Garante que a consulta também está ligada a este relatório
+
             consulta.setRelatorio(this);
         }
     }
 
-    // Remove uma consulta do conjunto e mantém a consistência da relação
     public void removeConsulta(Consulta consulta) {
         if (consulta != null && this.consultas.contains(consulta)) {
             this.consultas.remove(consulta);
-            // Remove a ligação da consulta com este relatório
+
             consulta.setRelatorio(null);
         }
     }
 
-    // --- Getters e Setters (conforme o seu código) ---
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }

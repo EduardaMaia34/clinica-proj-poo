@@ -9,9 +9,6 @@ import org.hibernate.query.Query;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * CORREÇÃO: Este repositório agora usa o Hibernate para persistir os dados no banco.
- */
 public class RelatorioRepository {
 
     public Relatorio salvar(Relatorio relatorio) {
@@ -29,7 +26,6 @@ public class RelatorioRepository {
 
     public Optional<Relatorio> buscarPorId(int id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            // Usa FetchType.EAGER na entidade Relatorio para evitar LazyInitializationException
             Relatorio relatorio = session.get(Relatorio.class, id);
             return Optional.ofNullable(relatorio);
         } catch (Exception e) {
@@ -39,7 +35,6 @@ public class RelatorioRepository {
 
     public List<Relatorio> listarTodos() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            // A query HQL usa o nome da CLASSE da entidade
             Query<Relatorio> query = session.createQuery("FROM Relatorio", Relatorio.class);
             return query.list();
         } catch (Exception e) {

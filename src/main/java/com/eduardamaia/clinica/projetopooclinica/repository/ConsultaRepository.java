@@ -9,23 +9,20 @@ import org.hibernate.query.Query;
 import java.util.List;
 import java.util.Optional;
 
-// padrão de projeto Lucas
+// padrão de projeto Lucas (Singleton)
 public class ConsultaRepository {
 
-    // 1. Instância estática e privada da própria classe (inicialização eager)
     private static final ConsultaRepository instance = new ConsultaRepository();
-
-    // 2. Construtor privado para impedir a instanciação externa com 'new'
+    // Construtor privado para impedir a instanciação externa com 'new' e garantir que a classe nao possa
+    //ser instanciada por outra
     private ConsultaRepository() {
-        // Construtor privado garante que a classe não pode ser instanciada de fora.
     }
 
-    // 3. Método público estático para fornecer o ponto de acesso global à instância
+    //metodo para "substituir" o new ao ser instanciado por outra classe
     public static ConsultaRepository getInstance() {
         return instance;
     }
 
-    // --- Os métodos originais permanecem inalterados ---
 
     public Consulta salvar(Consulta consulta) {
         Transaction tx = null;
